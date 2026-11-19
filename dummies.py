@@ -122,7 +122,7 @@ def keys():
 # ------------------------------------------------------------------ внутренности
 def internals():
     out = {}
-    z0 = P.WALL
+    z0 = P.BASE_T
     x, y = P.XL_POS
     w, d = P.XL_PAD
     out["xl4015"] = box_xyz(x - w / 2, x + w / 2, y - d / 2, y + d / 2, z0, z0 + P.XL_H)
@@ -142,7 +142,7 @@ def internals():
                                            -cin[2] / 2 - P.WALL, cin[2] / 2 + P.WALL)
     # подставка камеры до дна (печатается заодно с камерой)
     zb = zc - cin[2] / 2 - P.WALL
-    out["spk_stand"] = box_xyz(xo - cw + 2, xo - 2, yc - cin[1] / 2, yc + cin[1] / 2, P.WALL, zb - 2.0) if zb - 2.0 > P.WALL + 1 else None
+    out["spk_stand"] = box_xyz(xo - cw + 2, xo - 2, yc - cin[1] / 2, yc + cin[1] / 2, P.BASE_T + P.BASE_RIM_H + 0.5, zb - 2.0) if zb - 2.0 > P.BASE_T + P.BASE_RIM_H + 1.5 else None
     if out["spk_stand"] is None:
         del out["spk_stand"]
     out["speaker"] = rot * Pos(-P.WALL - P.SPK_DEPTH / 2, 0, 0) * Rot(0, 90, 0) * Cylinder(P.SPK_D / 2, P.SPK_DEPTH)

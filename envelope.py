@@ -163,17 +163,26 @@ def rear_bushing():
 PARTS = ["base", "front_band", "front_screen", "rear", "side_l", "side_r", "roof"]
 
 
-def zones():
-    """Зоны-призмы для деления скорлупы. Приоритет: крыша > бока > перед > зад > дно."""
+def zones(extra=0.0):
+    """Зоны-призмы для деления скорлупы. Приоритет: крыша > бока > перед > зад > дно.
+    extra — расширить зоны стенок внутрь (для зазоров дна/бортика)."""
     big = 2 * P.W
-    r = P.R_EDGE + 0.5
-    s = P.WALL + 0.6
+    r = P.R_EDGE + 0.5 + extra
+    s = P.WALL + 0.6 + extra
     Z = {}
-    Z["roof"] = box_xyz(-big, big, -big, big, P.H - r, P.H + 10)
+    if P.print_whole():
+        Z["roof"] = box_xyz(-big, big, -big, big, P.H - r, P.H + 10)
+    else:
+        # шов крыша↔бок — по биссектрисе угла (середина скругления), а не по плоскости бока
+        t, c = math.tan(P.SIDE_LEAN), math.cos(P.SIDE_LEAN)
+        xb = lambda z: P.W / 2 - z * t - (P.H - z) / c  # noqa: E731
+        z0, z1 = P.H - 40, P.H + 10
+        Z["roof_mitre"] = _prism_xz([(-xb(z0), z0), (xb(z0), z0), (xb(z1), z1), (-xb(z1), z1)], -big, big)
     hx, hy, hd = P.HANDLE
     yc = (P.Y_TOP_FRONT + P.Y_TOP_REAR) / 2
-    Z["roof"] = Z["roof"] + Pos(0, yc, P.H - (hd + P.WALL + 1) / 2) * Box(hx + 2 * P.WALL + 2, hy + 2 * P.WALL + 2,
-                                                                       hd + P.WALL + 1)
+    handle = Pos(0, yc, P.H - (hd + P.WALL + 1) / 2) * Box(hx + 2 * P.WALL + 2, hy + 2 * P.WALL + 2, hd + P.WALL + 1)
+    if "roof" in Z:
+        Z["roof"] = Z["roof"] + handle
     # бока владеют вертикальными скруглениями на углах → шов на переднем/заднем лице в 5.5 мм от угла
     hw0, hw1 = P.half_w(-10) - r, P.half_w(P.H + 10) - r
     Z["side_r"] = _prism_xz([(hw0, -10), (big, -10), (big, P.H + 10), (hw1, P.H + 10)], -big, big)
@@ -192,6 +201,11 @@ def zones():
     sr = s / cos(P.REAR_LEAN)
     Z["rear"] = _prism_yz([(P.y_rear(-10) - sr, -10), (P.D + 50, -10), (P.D + 50, P.H + 10),
                            (P.y_rear(P.H + 10) - sr, P.H + 10)], -big, big)
+    if "roof_mitre" in Z:
+        m = Z.pop("roof_mitre")
+        top = box_xyz(-big, big, -big, big, P.H - r, P.H + 10)
+        sides_only = box_xyz(-big, big, -big, big, P.H - 40, P.H + 10) - Z["front"] - Z["rear"]
+        Z["roof"] = (m & (top + sides_only)) + handle
     return Z
 
 
@@ -213,17 +227,50 @@ def split(sh):
     return out
 
 
+def _walls_union(extra):
+    Z = zones(extra)
+    u = None
+    for k in ("side_l", "side_r", "front", "rear"):
+        u = Z[k] if u is None else u + Z[k]
+    return u
+
+
+def base_extras(b):
+    """Дно толще (BASE_T) + бортик жёсткости по краю, с зазором FIT от стенок."""
+    import fasteners as F
+    big = 2 * P.W
+    w1 = _walls_union(P.FIT)
+    w2 = _walls_union(P.FIT + P.BASE_RIM_T)
+    plate = (box_xyz(-big, big, -big, big, 0, P.BASE_T) & b) - w1
+    zr = box_xyz(-big, big, -big, big, P.BASE_T - 0.01, P.BASE_T + P.BASE_RIM_H) & b
+    rim = (zr & w2) - w1
+    for _part, x, y in F.bottom_bosses():
+        rim = rim - Pos(x, y, P.BASE_T + 5) * Cylinder(P.BOSS_D / 2 + P.FIT + 0.5, 20)
+    return plate + rim
+
+
+def groups():
+    """Имена печатных деталей переднего узла и колпака (целиком или из частей)."""
+    if P.print_whole():
+        return ["front"], ["cover"]
+    return ["front_band", "front_screen"], ["side_l", "side_r", "roof"]
+
+
 def build(with_fasteners=True):
     b = body()
     sh, inner = shell(b)
     sh = sh - _screen_cuts() - _band_cuts() - _grille_cuts() - _rear_cuts()
     parts = split(sh)
+    parts["base"] = parts["base"] + base_extras(b)
     parts["rear"] = parts["rear"] + rear_bushing()
     parts["screen_bezel"] = screen_bezel()
     hw = {}
     if with_fasteners:
         import fasteners
         parts, hw = fasteners.apply(parts, inner, b)
+    if P.print_whole():
+        parts["front"] = parts.pop("front_band") + parts.pop("front_screen")
+        parts["cover"] = parts.pop("side_l") + parts.pop("side_r") + parts.pop("roof")
     build.hardware = hw
     return parts
 

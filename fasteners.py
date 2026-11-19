@@ -68,7 +68,7 @@ def wall_in_side(z):
 def bottom_bosses():
     """[(part, x, y)] — центры нижних бобышек (винты снизу через дно)."""
     r = P.BOSS_D / 2
-    zt = P.WALL + P.BOSS_H
+    zt = P.BASE_T + P.BOSS_H
     out = []
     for x in P.BASE_SCREWS_BAND:
         out.append(("front_band", x, wall_in_band(zt) + r - 1.0))
@@ -105,8 +105,8 @@ def top_tab(x, sgn, y_in):
     zr0 = P.TAB_Z + 1.0
     zr1 = P.H - P.WALL + 1.0
     lo, hi = sorted((y_fin, y_fin + sgn * t))
-    rib_a = box_xyz(x - w / 2 - 3, x + w / 2 + 3, lo - P.FIT - 2.4, lo - P.FIT, zr0, zr1)
-    rib_b = box_xyz(x - w / 2 - 3, x + w / 2 + 3, hi + P.FIT, hi + P.FIT + 2.4, zr0, zr1)
+    rib_a = box_xyz(x - w / 2 - 1.5, x + w / 2 + 1.5, lo - P.FIT - 2.4, lo - P.FIT, zr0, zr1)
+    rib_b = box_xyz(x - w / 2 - 1.5, x + w / 2 + 1.5, hi + P.FIT, hi + P.FIT + 2.4, zr0, zr1)
     return tab, rib_a + rib_b
 
 
@@ -115,16 +115,16 @@ def apply(parts, inner, body):
     from build123d import offset
     solid_in = offset(body, amount=-0.6)   # чтобы бобышки врастали в стенку, но не вылезали наружу
     hw_screws, hw_inserts = [], []
-    zb = P.WALL
+    zb = P.BASE_T
     base_cuts = None
     # 1) нижние бобышки на стенках + потай в дне
     for part, x, y in bottom_bosses():
         b, hole = boss_up(x, y, zb, P.BOSS_H)
         b = b & solid_in
         parts[part] = parts[part] + b - hole
-        c = _csk_hole(x, y, 0, P.WALL)
+        c = _csk_hole(x, y, 0, P.BASE_T)
         base_cuts = c if base_cuts is None else base_cuts + c
-        hw_screws.append(screw((x, y, 0), (0, 0, 1), 10.0))
+        hw_screws.append(screw((x, y, 0), (0, 0, 1), P.BASE_SCREW_L))
         hw_inserts.append(insert((x, y, zb), (0, 0, 1)))
     parts["base"] = parts["base"] - base_cuts
 
@@ -150,7 +150,7 @@ def apply(parts, inner, body):
                                 + Pos(hx, hy, P.SCR_Z_PCB_BACK + 3) * Cylinder(1.5, 6.0)))
 
     # 5) ножки
-    feet = [Pos(x, y, -1.5) * Cylinder(P.FOOT_D / 2, 3.0) for x, y in P.FEET]
+    feet = [Pos(x, y, -P.FOOT_T / 2) * Cylinder(P.FOOT_D / 2, P.FOOT_T) for x, y in P.FEET]
 
     hw = {"screws": Compound(children=hw_screws), "inserts": Compound(children=hw_inserts),
           "feet": Compound(children=feet)}

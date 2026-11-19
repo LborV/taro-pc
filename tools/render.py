@@ -103,7 +103,7 @@ VIEWS = {
 
 
 def render(objs, view, out, size=(1400, 1050), clip_spec=None, title="", ortho=None, edges=True, legend=None,
-           labels=None, zoom=1.0, cam_dir=None):
+           labels=None, zoom=1.0, cam_dir=None, lines=None, extra_bounds=None):
     """objs: list of (name, shape, hex color, opacity)."""
     ren = vtk.vtkRenderer()
     ren.SetBackground(1, 1, 1)
@@ -140,6 +140,17 @@ def render(objs, view, out, size=(1400, 1050), clip_spec=None, title="", ortho=N
             ea.GetProperty().SetColor(0.15, 0.15, 0.15)
             ea.GetProperty().SetLineWidth(1.2)
             ren.AddActor(ea)
+    if extra_bounds:   # невидимые точки, чтобы камера захватила линии
+        for p0 in extra_bounds:
+            sp = vtk.vtkSphereSource()
+            sp.SetCenter(*p0)
+            sp.SetRadius(0.01)
+            m = vtk.vtkPolyDataMapper()
+            m.SetInputConnection(sp.GetOutputPort())
+            a = vtk.vtkActor()
+            a.SetMapper(m)
+            a.GetProperty().SetOpacity(0.0)
+            ren.AddActor(a)
     d, up = VIEWS[view] if cam_dir is None else cam_dir
     cam = ren.GetActiveCamera()
     ren.ResetCamera()
@@ -195,18 +206,33 @@ def render(objs, view, out, size=(1400, 1050), clip_spec=None, title="", ortho=N
     wr.SetFileName(out)
     wr.SetInputConnection(w2i.GetOutputPort())
     wr.Write()
-    if labels:
-        _draw_labels(ren, out, labels, size)
+    if labels or lines:
+        _draw_labels(ren, out, labels or [], size, lines or [])
     print("render ->", os.path.relpath(out, ROOT))
 
 
-def _draw_labels(ren, out, labels, size):
+def _to_px(ren, p, H):
+    c = vtk.vtkCoordinate()
+    c.SetCoordinateSystemToWorld()
+    c.SetValue(*p)
+    x, y = c.GetComputedDisplayValue(ren)
+    return x, H - y
+
+
+def _draw_labels(ren, out, labels, size, lines=()):
     """labels: [(text, (x, y, z)), ...] или (text, xyz, (dx, dy)) — выноски с линиями (PIL)."""
     from PIL import Image, ImageDraw, ImageFont
     img = Image.open(out).convert("RGB")
     dr = ImageDraw.Draw(img)
     f = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 26)
     W, H = size
+    fs = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 22)
+    for ln in lines:
+        p0, p1, col = ln[0], ln[1], ln[2]
+        a, b = _to_px(ren, p0, H), _to_px(ren, p1, H)
+        dr.line([a, b], fill=col, width=ln[3] if len(ln) > 3 else 3)
+        if len(ln) > 4 and ln[4]:
+            dr.text((b[0] + 8, b[1] - 12), ln[4], font=fs, fill=col)
     for lab in labels:
         text, p = lab[0], lab[1]
         c = vtk.vtkCoordinate()

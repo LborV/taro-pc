@@ -56,8 +56,8 @@ def build_objects():
     from dummies import screen_plane, screen_step
     from render_layout import C
 
-    CARCASS = {"base", "front_band", "front_screen", "rear"}
-    COVER = {"side_l", "side_r", "roof"}
+    CARCASS = {"base", "front_band", "front_screen", "front", "rear"}
+    COVER = {"side_l", "side_r", "roof", "cover"}
     HW = {"screws", "inserts", "feet"}
 
     def group_of(name):
@@ -112,7 +112,7 @@ const dl2 = new THREE.DirectionalLight(0xffffff, 0.5); dl2.position.set(300,400,
 const grid = new THREE.GridHelper(400, 20, 0xbbb2a0, 0xd8d0c0); grid.rotation.x = Math.PI/2; grid.position.set(0,80,-0.5); scene.add(grid);
 const clipPlane = new THREE.Plane(new THREE.Vector3(-1,0,0), 110);
 const b64 = (s, T) => { const bin = atob(s); const u = new Uint8Array(bin.length); for (let k=0;k<bin.length;k++) u[k]=bin.charCodeAt(k); return new T(u.buffer); };
-const EXPLODE = {roof:[0,0,130], side_l:[0,0,130], side_r:[0,0,130], front_screen:[0,-90,0], screen_bezel:[0,-90,0],
+const EXPLODE = {cover:[0,0,130], front:[0,-90,0], roof:[0,0,130], side_l:[0,0,130], side_r:[0,0,130], front_screen:[0,-90,0], screen_bezel:[0,-90,0],
   front_band:[0,-90,0], rear:[0,90,0]};
 const objs = {}; const groups = {};
 for (const o of DATA) {

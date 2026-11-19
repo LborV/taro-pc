@@ -1,0 +1,106 @@
+[
+ {
+  "file": "taro_base.stl",
+  "size": [
+   203.0,
+   158.5,
+   10.0
+  ],
+  "orient": "низом вниз, бортик вверх",
+  "colour": "бежевый",
+  "fits_bed": true,
+  "qty": 1,
+  "volume_cm3": 136.3
+ },
+ {
+  "file": "taro_rear.stl",
+  "size": [
+   203.0,
+   19.8,
+   179.5
+  ],
+  "orient": "стоя, как в сборке (втулка ввода снаружи мешает класть плашмя); кайма 8 мм",
+  "colour": "бежевый",
+  "fits_bed": true,
+  "qty": 1,
+  "volume_cm3": 75.1
+ },
+ {
+  "file": "taro_screen_bezel.stl",
+  "size": [
+   140.2,
+   95.8,
+   1.2
+  ],
+  "orient": "лицом вниз",
+  "colour": "тёмно-серый",
+  "fits_bed": true,
+  "qty": 1,
+  "volume_cm3": 7.4
+ },
+ {
+  "file": "taro_front.stl",
+  "size": [
+   203.0,
+   80.8,
+   179.5
+  ],
+  "orient": "стоя, как в сборке; кайма 8 мм",
+  "colour": "бежевый",
+  "fits_bed": true,
+  "qty": 1,
+  "volume_cm3": 56.2
+ },
+ {
+  "file": "taro_cover.stl",
+  "size": [
+   214.0,
+   165.0,
+   185.0
+  ],
+  "orient": "крышей вниз; под ручкой мост 30 мм или поддержка",
+  "colour": "бежевый",
+  "fits_bed": true,
+  "qty": 1,
+  "volume_cm3": 183.7
+ },
+ {
+  "file": "taro_keycap_1_one_card.stl + _SYMBOL.stl",
+  "size": [
+   19.0,
+   19.0,
+   9.0
+  ],
+  "orient": "верхом вниз; _SYMBOL — вторым цветом (импортировать вместе как одну деталь)",
+  "colour": "тёмно-серый + светлый символ",
+  "fits_bed": true,
+  "qty": 1,
+  "volume_cm3": 1.2
+ },
+ {
+  "file": "taro_keycap_2_three_cards.stl + _SYMBOL.stl",
+  "size": [
+   19.0,
+   19.0,
+   9.0
+  ],
+  "orient": "верхом вниз; _SYMBOL — вторым цветом (импортировать вместе как одну деталь)",
+  "colour": "тёмно-серый + светлый символ",
+  "fits_bed": true,
+  "qty": 1,
+  "volume_cm3": 1.19
+ },
+ {
+  "file": "taro_keycap_3_question.stl + _SYMBOL.stl",
+  "size": [
+   19.0,
+   19.0,
+   9.0
+  ],
+  "orient": "верхом вниз; _SYMBOL — вторым цветом (импортировать вместе как одну деталь)",
+  "colour": "тёмно-серый + светлый символ",
+  "fits_bed": true,
+  "qty": 1,
+  "volume_cm3": 1.21
+ }
+]

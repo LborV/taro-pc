@@ -11,8 +11,8 @@ from dummies import screen_plane, screen_step  # noqa: E402
 from tools.render import render  # noqa: E402
 
 BEIGE, BEIGE2, DARK = "#e3d3b0", "#d8c59c", "#3b3d40"
-C = {"base": "#cdb98f", "front_band": BEIGE, "front_screen": "#e8d9b8", "rear": "#dccba6",
-     "side_l": "#efe3c6", "side_r": "#efe3c6", "roof": "#f2e8cf",
+C = {"base": "#cdb98f", "front_band": BEIGE, "front_screen": "#e8d9b8", "front": BEIGE, "rear": "#dccba6",
+     "side_l": "#efe3c6", "side_r": "#efe3c6", "roof": "#f2e8cf", "cover": "#efe3c6",
      "screws": "#6d6f73", "inserts": "#c9a227", "feet": "#222222",
      "screen_bezel": DARK, "crowpanel": "#2f3b45",
      "scr_aa": "#cfe3f2",
@@ -31,7 +31,7 @@ SKIP = {"scr_pcb", "scr_glass"}
 def objs(exclude=(), keepouts=True, ko_op=0.3):
     out = []
     for n, col in C.items():
-        if n in exclude or n in SKIP:
+        if n in exclude or n in SKIP or n not in shapes:
             continue
         ko = n.endswith("keepout")
         if ko and not keepouts:
@@ -44,8 +44,10 @@ LEG = [("экран CrowPanel 5\" (STEP)", C["crowpanel"]), ("принтер CSN
        ("клавиши MX", C["key_switches"]), ("XL4015", C["xl4015"]), ("PCF8574", C["pcf8574"]),
        ("камера динамика", C["spk_chamber_env"]), ("зоны: колодки / подстроечник", C["pr_clamp_l_keepout"]),
        ("зоны: кабели / разъёмы", C["scr_cable_keepout"]), ("откидывание крышки лотка", C["pr_lid_keepout"])]
-COVER = ("side_l", "side_r", "roof")
-FRONT = ("front_band", "front_screen", "screen_bezel")
+import envelope as _env  # noqa: E402
+FRONT_P, COVER_P = _env.groups()
+COVER = tuple(COVER_P)
+FRONT = tuple(FRONT_P) + ("screen_bezel",)
 NOCOVER = set(COVER)
 EXPLODE = {**{n: (0, 0, 130) for n in COVER}, **{n: (0, -90, 0) for n in FRONT},
            "rear": (0, 90, 0), "base": (0, 0, 0), "feet": (0, 0, 0)}
@@ -56,6 +58,8 @@ def exploded():
     from build123d import Pos as _P
     out = []
     for n in C:
+        if n not in shapes:
+            continue
         if n in EXPLODE or n == "screws":
             d = EXPLODE.get(n, (0, 0, 0))
             out.append((n, _P(*d) * shapes[n], C[n], 1.0))
@@ -91,7 +95,7 @@ def assembly_steps():
         objs_ = [(n, shapes[n], C[n], 1.0) for n in done]
         d = lift.get(g, (0, 0, 0))
         for n in groups[g]:
-            col = STEP_COL if n in ("base", "rear", "front_band", "front_screen", "side_l", "side_r", "roof") else C[n]
+            col = STEP_COL if n in ("base", "rear", *FRONT_P, *COVER_P) else C[n]
             objs_.append((n, _P(*d) * shapes[n], col, 1.0))
         if scr[g]:
             objs_.append(("scr", Compound(children=scr[g]), "#111111", 1.0))

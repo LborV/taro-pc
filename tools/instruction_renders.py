@@ -25,16 +25,24 @@ GREY = "#bdb7aa"
 ONLY = [a for a in sys.argv[1:]]
 
 
+WHOLE = P.print_whole()
+ALIAS = {"front_band": "front", "front_screen": None, "side_l": "cover", "side_r": None, "roof": None} if WHOLE else {}
+
+
 def want(name):
     return not ONLY or any(o in name for o in ONLY)
 
 
 def R(name, objs, view, **kw):
     if want(name):
-        render(objs, view, OUT + name + ".png", **kw)
+        render([x for x in objs if x is not None], view, OUT + name + ".png", **kw)
 
 
 def o(name, col=None, op=1.0, d=(0, 0, 0)):
+    if name in ALIAS:
+        name = ALIAS[name]
+        if name is None:
+            return None
     s = shapes[name]
     if d != (0, 0, 0):
         s = Pos(*d) * s
@@ -51,8 +59,8 @@ INSIDE_FRONT = ((0.55, 1.4, 0.75), (0, 0, 1))          # взгляд на пе�
 INSIDE_REAR = ((-0.55, -1.4, 0.75), (0, 0, 1))
 BELOW = ((0.35, -0.9, -1.3), (0, 0, 1))
 
-COVER = ["side_l", "side_r", "roof"]
-FRONT = ["front_band", "front_screen", "screen_bezel"]
+COVER = ["cover"] if WHOLE else ["side_l", "side_r", "roof"]
+FRONT = (["front"] if WHOLE else ["front_band", "front_screen"]) + ["screen_bezel"]
 SCREEN = ["crowpanel", "scr_aa"]
 PRINTER = ["pr_frame", "pr_body"]
 KEYS = ["key_plate", "key_switches", "key_caps"]
@@ -93,15 +101,16 @@ R("00_cover", [o(n) for n in COVER + FRONT + ["rear", "base", "feet"] + SCREEN +
 R("01_rear_view", [o(n) for n in COVER + FRONT + ["rear", "base", "feet"] + REAR_HW], "iso_rear", size=(1200, 900))
 
 # ============================================================ 1. печатные детали по одной
-GALLERY = {
-    "p_base": ["base"], "p_front_band": ["front_band"], "p_front_screen": ["front_screen"],
-    "p_screen_bezel": ["screen_bezel"], "p_rear": ["rear"], "p_side_l": ["side_l"], "p_side_r": ["side_r"],
-    "p_roof": ["roof"],
-}
+GALLERY = {"p_base": ["base"], "p_screen_bezel": ["screen_bezel"], "p_rear": ["rear"]}
+if WHOLE:
+    GALLERY.update({"p_front": ["front"], "p_cover": ["cover"]})
+else:
+    GALLERY.update({"p_front_band": ["front_band"], "p_front_screen": ["front_screen"], "p_side_l": ["side_l"],
+                    "p_side_r": ["side_r"], "p_roof": ["roof"]})
 for name, parts in GALLERY.items():
     view = "iso_front"
     cd = None
-    if name in ("p_side_l",):
+    if name in ("p_side_l", "p_cover"):
         cd = ((-1.3, -0.5, 0.6), (0, 0, 1))
     if name in ("p_side_r",):
         cd = ((1.3, -0.5, 0.6), (0, 0, 1))
@@ -123,7 +132,20 @@ labs = [(str(i + 1), p) for i, p in enumerate(boss_pts("side_l", P.WALL) + boss_
 R("12_inserts_cover", [o(n, "#e5d7b6") for n in COVER], "iso_front", cam_dir=BELOW, labels=labs,
   size=(1300, 1000), title="Колпак снизу: 4 вставки M3 в бобышках боков")
 
-# ============================================================ 3. склейка передней панели
+# ============================================================ 3. склейка передней панели (только если печать из частей)
+if WHOLE:
+    ONLY_SKIP = {"20_glue_front", "70_cover_glue"}
+else:
+    ONLY_SKIP = set()
+_R = R
+
+
+def R(name, objs, view, **kw):  # noqa: F811
+    if name not in ONLY_SKIP:
+        _R(name, objs, view, **kw)
+
+
+
 k = 35
 bis = (0, -(math.cos(P.BAND_TILT) + math.cos(P.TILT)), -(math.sin(P.BAND_TILT) + math.sin(P.TILT)))
 nb = math.hypot(*bis)
@@ -229,3 +251,37 @@ R("99_all_screws", [o(n) for n in ["base", "feet"] + COVER + ["front_band", "rea
   title="Все 10 винтов снизу: П — перед, З — зад, К — колпак")
 R("100_final", [o(n) for n in COVER + FRONT + ["rear", "base", "feet"] + SCREEN + PRINTER + ["key_caps"]],
   "iso_front_r", size=(1300, 1000), title="Готово")
+
+# ============================================================ угол обзора экрана (сбоку)
+def view_angle_numbers(eye_h, eye_d, tilt_deg=None):
+    """Угол между линией взгляда и нормалью экрана, градусы. eye_d — от передней кромки корпуса."""
+    t = math.radians(tilt_deg if tilt_deg is not None else P.TILT_DEG)
+    c = scr_pt(0, 0, 0)
+    ey, ez = -eye_d, eye_h
+    vy, vz = ey - c[1], ez - c[2]
+    ny, nz = -math.cos(t), math.sin(t)
+    cosang = (vy * ny + vz * nz) / math.hypot(vy, vz)
+    return math.degrees(math.acos(cosang)), c
+
+
+EYES = [("сидя", 430.0, 480.0, (46, 125, 50)), ("стоя", 650.0, 420.0, (198, 40, 40))]
+if want("05_view_angle"):
+    c = scr_pt(0, 0, 0)
+    lines = []
+    ext = []
+    for name, h, dd, col in EYES:
+        ang, _ = view_angle_numbers(h, dd)
+        k = 0.45
+        pe = (c[0] + 120, c[1] + (-dd - c[1]) * k, c[2] + (h - c[2]) * k)
+        lines.append((c, pe, col, 4, f"{name}: {ang:.0f}° от нормали"))
+        ext.append(pe)
+    pn = (c[0] + 120, c[1] + N_SCR[1] * 120, c[2] + N_SCR[2] * 120)
+    lines.append((c, pn, (21, 101, 192), 3, "нормаль экрана"))
+    ext.append(pn)
+    R("05_view_angle", [o(n) for n in COVER + FRONT + ["rear", "base", "feet"] + SCREEN + PRINTER + ["key_caps"]],
+      "right", size=(1300, 1000), lines=lines, extra_bounds=ext,
+      title=f"Угол обзора: грань экрана {P.TILT_DEG:.0f}° от вертикали, центр экрана на высоте {c[2]:.0f} мм")
+    for name, h, dd, col in EYES:
+        a1, _ = view_angle_numbers(h, dd)
+        a2, _ = view_angle_numbers(h, dd, 12.0)
+        print(f"VIEW {name}: eye {h:.0f} high {dd:.0f} away → {a1:.1f}° (tilt {P.TILT_DEG}) vs {a2:.1f}° (tilt 12)")
