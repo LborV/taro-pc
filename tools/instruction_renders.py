@@ -14,7 +14,7 @@ from build123d import Compound, Location, Pos  # noqa: E402
 
 import fasteners as F  # noqa: E402
 import params as P  # noqa: E402
-from dummies import screen_plane  # noqa: E402
+from dummies import band_plane, screen_plane  # noqa: E402
 from render_layout import C, shapes  # noqa: E402
 from tools.render import render  # noqa: E402
 
@@ -122,9 +122,14 @@ for name, parts in GALLERY.items():
 fb = boss_pts("front_band", P.WALL + P.BOSS_H)
 labs = [(str(i + 1), p) for i, p in enumerate(fb)]
 labs += [(str(i + 4), scr_pt(hx, hy, P.SCR_Z_PCB_FRONT)) for i, (hx, hy) in enumerate(P.SCR_HOLES)]
+from parts import key_plate as KPm  # noqa: E402
+_bl = Location(band_plane())
+for i, (ex, eu) in enumerate(KPm.ear_points()):
+    pp = (_bl * Pos(ex, eu, -P.WALL - KPm.boss_h())).position
+    labs.append((str(8 + i), (pp.X, pp.Y, pp.Z)))
 R("10_inserts_front", [o("front_band", "#d8c8a4"), o("front_screen", "#e5d7b6")], "iso_front",
   cam_dir=INSIDE_FRONT, labels=labs, size=(1300, 1000),
-  title="Передняя панель изнутри: 7 вставок M3")
+  title="Передняя панель изнутри: 9 вставок M3")
 labs = [(str(i + 1), p) for i, p in enumerate(boss_pts("rear", P.WALL + P.BOSS_H))]
 R("11_inserts_rear", [o("rear", "#d8c8a4")], "iso_front", cam_dir=INSIDE_REAR, labels=labs, size=(1300, 1000),
   title="Задняя стенка изнутри: 3 вставки M3")
@@ -206,6 +211,11 @@ R("81_base_inner", [o("base", "#d8c8a4")] + [o(n) for n in INNER], "iso_front", 
   labels=[("XL4015", shapes["xl4015"].center()), ("PCF8574", shapes["pcf8574"].center()),
           ("динамик", shapes["speaker_box"].center())],
   title="Дно сверху: понижайка, PCF8574, камера динамика")
+
+R("82_speaker_box", [o("speaker_box", "#a1887f"), o("speaker", d=(40, 0, 0))], "iso_front",
+  cam_dir=((1.4, -0.6, 0.5), (0, 0, 1)), size=(900, 700))
+R("83_key_plate", [o("key_plate", "#9e9e9e"), o("key_switches", d=along(N_BAND, -25))], "iso_front",
+  cam_dir=INSIDE_FRONT, size=(900, 700))
 
 # ============================================================ 10. передняя панель → дно
 front_all = FRONT + SCREEN + PRINTER + KEYS
