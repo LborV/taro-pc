@@ -378,6 +378,33 @@ def printer_cradle():
     return w & box_xyz(-big, big, -big, big, P.BASE_T - 0.01, big)
 
 
+def _seat(cx, cy, iw, ih):
+    """Бортик посадочного места: внутренний размер iw × ih, разрывы по центру коротких сторон."""
+    t, h = P.SEAT_WALL
+    z0 = P.BASE_T - 0.01
+    ring = box_xyz(cx - iw / 2 - t, cx + iw / 2 + t, cy - ih / 2 - t, cy + ih / 2 + t, z0, P.BASE_T + h)
+    ring -= box_xyz(cx - iw / 2, cx + iw / 2, cy - ih / 2, cy + ih / 2, z0 - 1, P.BASE_T + h + 1)
+    g = P.SEAT_GAP
+    ring -= box_xyz(cx - iw / 2 - t - 1, cx + iw / 2 + t + 1, cy - g / 2, cy + g / 2, z0 - 1, P.BASE_T + h + 1)
+    return ring
+
+
+def base_seats():
+    """Посадочные места на дне: XL4015 (на клей) и PCF8574 (2 стойки под саморезы M2.5)."""
+    xl = _seat(*P.XL_POS, *P.XL_PAD)
+    pcf = _seat(*P.PCF_POS, *P.PCF_PAD)
+    x0 = P.PCF_POS[0] - P.PCF_BOARD[0] / 2
+    y0 = P.PCF_POS[1] - P.PCF_BOARD[1] / 2
+    holes = None
+    for hx, hy in P.PCF_HOLES:
+        st = Pos(x0 + hx, y0 + hy, P.BASE_T + P.PCF_STANDOFF_H / 2 - 0.01) * Cylinder(P.PCF_STANDOFF_D / 2,
+                                                                                   P.PCF_STANDOFF_H + 0.02)
+        hl = Pos(x0 + hx, y0 + hy, P.BASE_T + P.PCF_STANDOFF_H - 3.0) * Cylinder(1.1, 6.02)
+        pcf = pcf + st
+        holes = hl if holes is None else holes + hl
+    return xl + pcf - holes
+
+
 def groups():
     """Имена печатных деталей переднего узла и колпака (целиком или из частей)."""
     if P.print_whole():
@@ -390,7 +417,7 @@ def build(with_fasteners=True):
     sh, inner = shell(b)
     sh = sh - _screen_cuts() - _band_cuts() - _grille_cuts() - _rear_cuts()
     parts = split(sh)
-    parts["base"] = parts["base"] + base_extras(b) + printer_cradle()
+    parts["base"] = parts["base"] + base_extras(b) + printer_cradle() + base_seats()
     parts["rear"] = parts["rear"] + rear_bushing()
     parts["screen_bezel"] = screen_bezel()
     bk, sk = bezel_backing_and_sockets()

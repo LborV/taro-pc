@@ -124,10 +124,10 @@ def internals():
     out = {}
     z0 = P.BASE_T
     x, y = P.XL_POS
-    w, d = P.XL_PAD
+    w, d = P.XL_BOARD
     out["xl4015"] = box_xyz(x - w / 2, x + w / 2, y - d / 2, y + d / 2, z0, z0 + P.XL_H)
-    out["xl4015_side_keepout"] = box_xyz(x + w / 2, x + w / 2 + P.XL_SIDE_FREE, y - d / 2, y + d / 2,
-                                         z0, z0 + P.XL_H)
+    xs = x + P.XL_PAD[0] / 2 + P.SEAT_WALL[0]          # свободная зона — за бортиком посадочного места
+    out["xl4015_side_keepout"] = box_xyz(xs, xs + P.XL_SIDE_FREE, y - d / 2, y + d / 2, z0, z0 + P.XL_H)
     x, y = P.PCF_POS
     bw, bd, bt = P.PCF_BOARD
     zp = z0 + P.PCF_STANDOFF_H
