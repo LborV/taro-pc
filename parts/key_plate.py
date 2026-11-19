@@ -2,12 +2,17 @@
 
 Координаты — плоскость пояса (dummies.band_plane): local X = мировой X, local Y = вверх по поясу (u),
 local Z = наружу. Тыл передней панели — local Z = −WALL.
-Печать: лицевой стороной (той, что к панели) вниз — плоско, без поддержек.
+Печать: рёбрами вниз — вершины рёбер и ушки в одной плоскости, без поддержек.
 """
 from build123d import Box, Cylinder, Location, Pos
 
 import params as P
 from dummies import band_plane, key_centers
+
+
+def boss_h():
+    """Высота бобышки от тыла панели до ушка."""
+    return P.FIT + P.KEY_PLATE_T + P.KEY_PLATE_RIB[1] - P.KEY_PLATE_EAR_T
 
 
 def plate_dims():
@@ -45,13 +50,13 @@ def plate_local():
     for x in xs:
         part -= _box(x - P.KEY_CUT / 2, x + P.KEY_CUT / 2, P.KEY_U - P.KEY_CUT / 2, P.KEY_U + P.KEY_CUT / 2, -50, 50)
     # ушки: лежат на бобышках панели (высота KEY_PLATE_BOSS_H от тыла панели), перемычка к пластине
-    ze1 = -P.WALL - P.KEY_PLATE_BOSS_H
-    ze0 = ze1 - P.KEY_PLATE_EAR_T
+    ze0 = zb - rh                                   # вровень с вершинами рёбер
+    ze1 = ze0 + P.KEY_PLATE_EAR_T
     for ex, eu in ear_points():
         sgn = 1 if eu > P.KEY_U else -1
         ub = u1 if sgn > 0 else u0
         ear = _box(ex - 7, ex + 7, min(ub, eu + sgn * 5), max(ub, eu + sgn * 5), ze0, ze1)
-        web = _box(ex - 7, ex + 7, min(ub - sgn * rt, ub), max(ub - sgn * rt, ub), ze0, zb)
+        web = _box(ex - 7, ex + 7, min(ub - sgn * rt, ub), max(ub - sgn * rt, ub), ze0, z_face)
         hole = Pos(ex, eu, ze0 + P.KEY_PLATE_EAR_T / 2) * Cylinder(P.M3_CLEAR / 2, 20)
         part = part + ear + web - hole
     return part
@@ -60,9 +65,9 @@ def plate_local():
 def bosses_local():
     """Бобышки на тыле передней панели под ушки (вставка M3 со стороны ушка)."""
     out, holes = None, None
-    zt = -P.WALL - P.KEY_PLATE_BOSS_H
+    zt = -P.WALL - boss_h()
     for ex, eu in ear_points():
-        b = Pos(ex, eu, (zt - P.WALL + 0.8) / 2) * Cylinder(P.BOSS_D / 2, P.KEY_PLATE_BOSS_H + 0.8)
+        b = Pos(ex, eu, (zt - P.WALL + 0.8) / 2) * Cylinder(P.BOSS_D / 2, boss_h() + 0.8)
         h = Pos(ex, eu, zt + P.INSERT_DEPTH / 2 - 0.01) * Cylinder(P.INSERT_HOLE / 2, P.INSERT_DEPTH)
         out = b if out is None else out + b
         holes = h if holes is None else holes + h
@@ -83,7 +88,7 @@ def hardware():
     """Винты M3×8 через ушки + вставки (для сборки/рендера)."""
     from build123d import Compound
     loc = Location(band_plane())
-    zt = -P.WALL - P.KEY_PLATE_BOSS_H
+    zt = -P.WALL - boss_h()
     scr, ins = [], []
     for ex, eu in ear_points():
         scr.append(loc * (Pos(ex, eu, zt - P.KEY_PLATE_EAR_T - 1.5) * Cylinder(2.75, 3.0)
@@ -94,4 +99,4 @@ def hardware():
 
 if __name__ == "__main__":
     p = key_plate()
-    print("key_plate", round(p.volume), p.is_valid, len(p.solids()), plate_dims())
+    print("key_plate", round(p.volume), p.is_valid, len(p.solids()), plate_dims(), "boss_h", boss_h())

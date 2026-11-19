@@ -6,7 +6,7 @@
 import math
 from math import cos, sin
 
-from build123d import (Axis, Box, Cylinder, Location, Plane, Polygon, Pos, Rot, chamfer,
+from build123d import (Axis, Box, Cylinder, Location, Plane, Polygon, Pos, Rot, Vector, chamfer,
                        extrude, fillet, offset)
 
 import params as P
@@ -249,6 +249,58 @@ def base_extras(b):
     return plate + rim
 
 
+def split_guides(parts, b):
+    """Направляющие для склейки (только при печати из частей):
+    1) перегиб передней панели: на нижней половине — полка-нахлёст за экранной половиной + 3 шипа ø3,
+       в экранной — гнёзда; половины встают только в одно положение, клей — по всей полке;
+    2) крыша↔бок: на каждом боку — полка под крышей + 2 шипа вверх, в крыше — гнёзда."""
+    big = 2 * P.W
+    solid_in = offset(b, amount=-0.6)
+    L_LIP, T_LIP, PIN_D, PIN_H = 10.0, 2.0, 3.0, 1.2
+    # --- 1) перегиб
+    n = Vector(0, -math.cos(P.TILT), math.sin(P.TILT))
+    up = Vector(0, math.sin(P.TILT), math.cos(P.TILT))
+    pl = Plane(origin=(0, P.Y_TILT, P.BAND_H), x_dir=(1, 0, 0), z_dir=n)
+    loc = Location(pl)
+    d0 = P.WALL + P.FIT
+    xw = P.half_w(P.BAND_H) - P.R_EDGE - 4.0
+    # над принтером места нет (верх корпуса принтера в 3 мм под перегибом) → полка только слева от принтера
+    x_r = P.PR_X - P.PR_BODY[0] / 2 - P.PR_CLAMP_SIDE - 2.0
+    x_l = -xw
+    lip = loc * Pos((x_l + x_r) / 2, (L_LIP - 6.0) / 2, -(d0 + T_LIP / 2)) * Box(x_r - x_l, L_LIP + 6.0, T_LIP)
+    lip = lip & solid_in
+    pins = None
+    socks = None
+    for x in (x_l + 0.2 * (x_r - x_l), x_l + 0.8 * (x_r - x_l)):
+        pin = loc * Pos(x, L_LIP * 0.6, -d0 + PIN_H / 2) * Cylinder(PIN_D / 2, PIN_H + 0.01)
+        sock = loc * Pos(x, L_LIP * 0.6, -P.WALL + (PIN_H + 0.3) / 2 - 0.01) * Cylinder(PIN_D / 2 + 0.15, PIN_H + 0.3)
+        pins = pin if pins is None else pins + pin
+        socks = sock if socks is None else socks + sock
+    parts["front_band"] = parts["front_band"] + lip + pins
+    parts["front_screen"] = parts["front_screen"] - socks
+    # --- 2) крыша↔бок
+    zr = P.H - P.WALL - P.FIT
+    y0, y1 = P.Y_TOP_FRONT + 14.0, P.Y_TOP_REAR - 14.0
+    for side, sx in (("side_l", -1), ("side_r", 1)):
+        xi = P.half_w(zr) - P.WALL / math.cos(P.SIDE_LEAN)
+        xa, xb_ = sx * (xi + 1.0), sx * (xi - L_LIP)
+        lip2 = box_xyz(min(xa, xb_), max(xa, xb_), y0, y1, zr - T_LIP, zr) & solid_in
+        roof = parts["roof"]
+        for d in ((sx * -P.FIT, 0, 0), (0, 0, -P.FIT), (sx * -P.FIT, 0, -P.FIT)):
+            lip2 = lip2 - Pos(*d) * roof
+        lip2 = lip2 - roof
+        p2 = s2 = None
+        for y in (y0 + 0.25 * (y1 - y0), y0 + 0.75 * (y1 - y0)):
+            x = sx * (xi - L_LIP / 2)
+            pin = Pos(x, y, zr + PIN_H / 2) * Cylinder(PIN_D / 2, PIN_H + 0.01)
+            sock = Pos(x, y, zr + P.FIT + (PIN_H + 0.3) / 2 - 0.01) * Cylinder(PIN_D / 2 + 0.15, PIN_H + 0.3)
+            p2 = pin if p2 is None else p2 + pin
+            s2 = sock if s2 is None else s2 + sock
+        parts[side] = parts[side] + lip2 + p2
+        parts["roof"] = parts["roof"] - s2
+    return parts
+
+
 def groups():
     """Имена печатных деталей переднего узла и колпака (целиком или из частей)."""
     if P.print_whole():
@@ -282,6 +334,8 @@ def build(with_fasteners=True):
         ss, si = SB.hardware()
         hw["screws"] = Compound(children=list(hw["screws"]) + list(ks) + list(ss))
         hw["inserts"] = Compound(children=list(hw["inserts"]) + list(ki) + list(si))
+    if not P.print_whole():
+        parts = split_guides(parts, b)
     if P.print_whole():
         parts["front"] = parts.pop("front_band") + parts.pop("front_screen")
         parts["cover"] = parts.pop("side_l") + parts.pop("side_r") + parts.pop("roof")

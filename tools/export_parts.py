@@ -18,7 +18,8 @@ import layout as L  # noqa: E402
 import params as P  # noqa: E402
 from parts.keycap import keycap  # noqa: E402
 
-OUT_STL, OUT_STEP = "out/stl/", "out/step/"
+SUFFIX = "" if P.print_whole() else "_split"
+OUT_STL, OUT_STEP = f"out/stl{SUFFIX}/", f"out/step{SUFFIX}/"
 os.makedirs(OUT_STL, exist_ok=True)
 os.makedirs(OUT_STEP, exist_ok=True)
 
@@ -57,6 +58,10 @@ else:
     plan["side_r"] = (L.shells["side_r"], ((Axis.Y, 90 - P.SIDE_LEAN_DEG),), "наружной стороной вниз", "бежевый")
     plan["roof"] = (L.shells["roof"], ((Axis.X, 180),), "верхом вниз", "бежевый")
 
+N_BAND = (-math.cos(P.BAND_TILT), math.sin(P.BAND_TILT))
+plan["key_plate"] = (L.shells["key_plate"], ((Axis.X, tilt_to_down(N_BAND) + 180),), "рёбрами и ушками вниз", "любой")
+plan["speaker_box"] = (L.shells["speaker_box"], (), "на подставке, как в сборке; лицевая стенка — мост 24 мм", "любой")
+
 report = []
 for name, (shape, rot, how, col) in plan.items():
     s = to_bed(shape, rot)
@@ -91,5 +96,5 @@ for k, nm in names.items():
 # сборка целиком (для просмотра в CAD)
 asm = Compound(children=[L.shells[n] for n in L.shells])
 export_step(asm, OUT_STEP + "taro_assembly_case.step")
-json.dump(report, open("out/parts.json", "w"), ensure_ascii=False, indent=1)
+json.dump(report, open(f"out/parts{SUFFIX}.json", "w"), ensure_ascii=False, indent=1)
 print("-> out/stl, out/step, out/parts.json")

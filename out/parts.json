@@ -4,13 +4,13 @@
   "size": [
    203.0,
    158.5,
-   10.0
+   12.0
   ],
   "orient": "низом вниз, бортик вверх",
   "colour": "бежевый",
   "fits_bed": true,
   "qty": 1,
-  "volume_cm3": 136.3
+  "volume_cm3": 137.0
  },
  {
   "file": "taro_rear.stl",
@@ -49,7 +49,7 @@
   "colour": "бежевый",
   "fits_bed": true,
   "qty": 1,
-  "volume_cm3": 56.2
+  "volume_cm3": 56.7
  },
  {
   "file": "taro_cover.stl",
@@ -63,6 +63,32 @@
   "fits_bed": true,
   "qty": 1,
   "volume_cm3": 183.7
+ },
+ {
+  "file": "taro_key_plate.stl",
+  "size": [
+   68.0,
+   46.0,
+   8.5
+  ],
+  "orient": "рёбрами и ушками вниз",
+  "colour": "любой",
+  "fits_bed": true,
+  "qty": 1,
+  "volume_cm3": 5.1
+ },
+ {
+  "file": "taro_speaker_box.stl",
+  "size": [
+   32.6,
+   70.0,
+   88.3
+  ],
+  "orient": "на подставке, как в сборке; лицевая стенка — мост 24 мм",
+  "colour": "любой",
+  "fits_bed": true,
+  "qty": 1,
+  "volume_cm3": 38.8
  },
  {
   "file": "taro_keycap_1_one_card.stl + _SYMBOL.stl",
