@@ -1,0 +1,980 @@
+CSN-A2 Micro panel thermal printer                1/26
+
+
+
+
+          CSN-A2 Micro panel thermal printer
+
+
+
+
+                                     Version1.1
+CSN-A2 Micro panel thermal printer                                                                                                     2/26
+
+
+
+                                                      Content
+
+Chapter1 Introduction.............................................................................................................. 2
+       Features.............................................................................................................................2
+Chapter2 Specifications.......................................................................................................... 3
+       2.1 Printer outline and out dimension........................................................................... 3
+       2.2 specifications..............................................................................................................4
+       2.3 printer installation...................................................................................................... 4
+       2.4 Interface connection..................................................................................................5
+Chapter3 Operation specifications and print test............................................................. 7
+       3.1 Operation specifications........................................................................................... 7
+       3.2 Printing test.................................................................................................................7
+Chapter4 Using attention........................................................................................................ 8
+Chapter5          ESC/POS PRINTING COMMAND SET........................................................... 9
+       5.1 Set of Command........................................................................................................9
+       5.2 Command Detail......................................................................................................10
+              5.2.1 Print Commands.......................................................................................... 10
+              5.2.2 Line spacing setting command...................................................................11
+              5.2.3 Character Setting Commands....................................................................12
+              5.2.4 Bit Image Command....................................................................................16
+              5.2.5 Key control command..................................................................................19
+              5.2.6 Init command................................................................................................ 19
+              5.2.7 Status Command......................................................................................... 20
+              5.2.8 Bar Code Command....................................................................................21
+              5.2.9 Control Parameter Command.................................................................... 22
+APPENDIXA CODE PAGE................................................................................................ 25
+APPENDIXB               International characters..............................................................................26
+CSN-A2 Micro panel thermal printer                                              3/26
+
+
+
+Chapter1 Introduction
+
+Features
+� Low-noise direct thermal printing method
+� Printer control panel built-in ANK character or GB18030 Chinese character,
+  thoroughly remove the uncommon words of anguish
+� Fast printing speed, low noise
+� can support Max.39MM(diameter) paper roll , that is biggest paper roll of the same
+  models.
+� Optional serial interface (RS-232C, TTL) /parallel port
+� rich of graphics / curves / characters print function
+� Easy paper loading structure
+� Support 5V-9V wide power voltage
+
+
+
+Chapter2 Specifications
+
+2.1 Printer outline and out dimension
+�    outline dimension : 111W*65D*57H mm
+�    Front opening Size: 103 W*57H mm
+�    embedded depth: 50mm
+�    the Max diameter of paper roll :39mm
+
+Outline is as follows:
+CSN-A2 Micro panel thermal printer                                         4/26
+
+
+
+
+2.2 specifications
+
+Item                                 Specifications
+PRINT METHOD                         thermal direct line printing
+Paper loading method                 easy paper loading
+paper width                          57mm
+print width                          48mm
+resolution ration                    8dots/mm(384dots/line)
+life of printing head                50km
+printing speed                       60mm/sec.; Max.:80MM/sec.(voltage 8.5V）
+character size                       12x24dots,or24x24dots
+Chinese character fonts              GB18030,12x24dots,or24x24dots
+outline dimension（WxHxD mm)          111mmx65mmx57mm
+installation(WxH mm)                 103mmx57mm
+embedded depth                       50mm
+paper roll specification             (width:57mm;Max. Diameter:39mm)
+interface Serial                     (RS-232C,TTL)/parallel
+input power                          DC5V-9V
+operating temperature                5°C~50°C
+storage temperature                  -20°C~60°C
+operating humidity                   10°C~80°C
+storage humidity                     10°C~90°C
+CSN-A2 Micro panel thermal printer                                                   5/26
+
+
+
+2.3 printer installation
+Put the panel printer into the front of the device as per Fig.1 and Fig.2,and then install
+fixed block and screwing as per Fig.3
+Note: have 1 to 6mm variation in thickness.
+
+
+
+
+2.4 Interface connection
+The user have option of RS232 ,TTL, and LPT interface
+The define of the PIN of the interface for RS232,TTL as the following:
+1               GND， Ground
+2               NULL
+3               VH，      input voltage，5V-9V
+4               GND， Ground
+5               RXD， receive data
+6               TXD， send data
+CSN-A2 Micro panel thermal printer                                           6/26
+
+
+
+
+The define of the Pin of LPT interface as below :
+1              GND， Ground
+2              VH，      input voltage ，5V-9V
+3              +5V， input voltage (general condition,only use +5Vm VH not input )
+4              the define of the Pin of LPT interface as below :
+               1. STROBE
+               2-9. DATA0-DATA7
+               10. ACKNLG
+               11. BUSY
+               12.    PE       paper out
+               13.    SLCT selection
+               14. AUTO FEED auto change line
+               15.    ERROR
+               16.    INIT
+               17.    SLCT IN
+               18-26 . GND
+CSN-A2 Micro panel thermal printer                                                    7/26
+
+
+
+
+Chapter3 Operation specifications and print test
+
+3.1 Operation specifications
+
+A． the instruction of indicator light
+Power on, the indicator light will flash 3 time, interval 1sec, it say the startness is OK,
+and then the instructions for the indicator light as below:
+
+Flash 1 times : At ordinary times during normal working condition
+Flash 2 times: Not detect printer
+Flash 3 times: lack of paper, and remind users to change new paper roller,
+Flash 5 times: Printing machine heating slice overheating
+
+B. key instruction
+The key on the panel printer is FEED key
+
+C. how to change new paper roller
+Before changing,turn up the switch,and put into the paper roller
+
+
+
+3.2 Printing test
+
+Power on, press the [feed ]key, for a while , relax the key, it will print out one testing
+sample .
+Power on, press key per time, it will feed the paper.
+CSN-A2 Micro panel thermal printer                                                   8/26
+
+
+
+Chapter4 Using attention
+
+4.1 Please notice, the ESD wrist ring and the humidity manufactures ETC, when using
+the printer,to protect the inner electronic parts of the printer from the damage of
+ESD,because the TPH of the Printer and photoelectric sensor are ESD Sensitive
+parts.
+
+4.2 For protecting plastic shaft,Don’t smear any oil or others on the rubber parts
+
+4.3 Don’t touch the TPH, TPH having the palm oil,will induce the usage of the printer.If
+any oil or others in the TPH,please using an alcohol cotton stick clean the area
+between plastic shaft and printer head at once.PS,Don’t strike the TPH.
+
+4.4 Due to the printer is easy-paper structure,you need pick up the rubber stick only
+push the rubber stick.So,if the paper jam,push harder will cause the rubber stick
+gearwheel damaged.so please don't push the paper harder,please do open the cover
+and re-fill the paper.
+
+4.5 The temperature of the TPH protection must be below 65 ℃ ,if you print
+continuously,Because the exterior of the temperature of the IC protection & motor
+can’t not over 90℃ to protect the motor thread ring.
+
+4.6 Please use the good quality paper,because the sensitive of the paper will
+influence print effect,meanwhile,rough paper will increase the excessive wear to the
+printer head, and reduce the life of the printer.
+CSN-A2 Micro panel thermal printer                                                        9/26
+
+
+
+Chapter5 ESC/POS PRINTING COMMAND SET
+
+5.1 Set of Command
+         Type        Command         Name
+                     LF              Print and line feed
+                     HT              JMPE to the next TAB position
+                     FF              Print the data in buffer
+Print                                Print the data in the buffer and locate to the next black
+                     ESC FF
+Command                              mark
+              ESC J n                Print and Feed n dots paper
+              ESC d n                Print and Feed n lines
+              ESC = n                Toggle the printer online or offline
+              ESC 2                  Select default line spacing
+              ESC 3 n                Set line spacing
+Line spacing
+              ESC a n                Select justification
+Command
+              GS L nL nH             Set the left blank margin with dots
+              ESC B n                Set the left blank char number
+              ESC ! n                Select print mode(s)
+              GS ! n                 Set or Cancel the double width and height
+              ESC E n                Set or Cancel bold font
+              ESC SP n               Set the space between chars
+              ESC SO                 Turn double width on
+              ESC DC4                Turn double width off
+Character     ESC { n                Turn upside-down printing mode on/off
+Command       GS B n                 Turn inverting printing mode on/off
+              ESC - n                Set the underline dots(0,1,2)
+              ESC % n                Select/Cancel user-defined characters
+              ESC &                  Define user-defined characters
+              ESC ?                  Cancel user-defined characters
+              ESC R n                Select and international character set
+              ESC t n                Select character code table
+              ESC *                  Select bit-image mode
+              GS *                   Define downloaded bit image
+              GS /                   Print downloaded bit image
+Bit     Image
+              GS v                   Print the bitmap with width and height
+Command
+              DC2 *                  Print the bitmap
+              DC2 V                  Print MSB bitmap
+              DC2 v                  Print LSB bitmap
+Init Command ESC @                   Initialize printer
+              ESC v n                Transmit paper sensor status
+Status
+              ESC u n                Transmit peripheral device status
+Command
+              GS a n                 Enable/Disable Automatic Status Back(ASB)
+CSN-A2 Micro panel thermal printer                                                    10/26
+
+
+           GS H                      Select printing position of human readable characters
+           GS h                      Set bar code height
+Bar   Code
+           GS x n                    Set bar code left position
+Command
+           GS w                      Set bar code width
+           GS k                      Print bar code
+           ESC 7 n1 n2               Set printing para. Heat & break time, max heat dot
+Board Para
+           DC2 # n                   Select print density
+Command
+           DC2 T                     Printing test page
+
+
+
+5.2 Command Detail
+
+TCB thermal printer control board use ESC/POS command set.
+The printing command is described as followed format:
+CMD                Function
+Format:                         ASCII: List by ASCII characters
+                              Decimal: LIST BY DECIMAL CHARACTERS
+                         Hexadecimal: List by hexadecimal characters
+Description:   Command function description
+Example:       Command use example
+
+
+5.2.1 Print Commands
+
+LF                 Print and line feed
+Format:                    ASCII: LF
+                        Decimal: 10
+                   Hexadecimal: 0A
+Description:       LF prints the data in the print buffer and feeds one line.
+                   When the print buffer is empty, LF feeds one line.
+
+HT                 Jump to the next TAB position
+Format:                   ASCII: HT
+                       Decimal: 9
+                   Hexadecimal: 09
+Description:       TAB position is 8 chars position.
+
+FF                 Print the data in buffer and locate to the next black mark
+Format:                     ASCII: FF
+                          Decimal: 12
+                    Hexadecimal: 0c
+CSN-A2 Micro panel thermal printer                                                11/26
+
+
+Description： Print the data in the buffer.
+             Locate to the black mark.
+             NOTE: Only board with black mark function support this
+             command.
+
+ESC J n             Print and feed paper
+Format:                      ASCII: ESC J n
+                           Decimal: 27 74 n
+                     Hexadecimal: 1B 4A n
+Description:        n = 0-255.
+                    ESC J prints the data in the print buffer and feeds n dots.
+                    The command will not change the setting set by command ESC
+                    2,ESC 3.
+
+ESC FF             Print the data in buffer and locate to the next black mark
+Format:                     ASCII: ESC FF
+                          Decimal: 27 12
+                    Hexadecimal: 1b 0c
+Description:       Print the data in the buffer.
+                   Locate to the black mark
+                   NOTE: Only board with black mark function support this
+                   command.
+
+ESC d n            Print and feed n lines
+Format:                     ASCII: ESC d n
+                          Decimal: 27 100 n
+                    Hexadecimal: 1B 64 n
+Description:       n = 0-255
+                   Print the data in the buffer and feed paper n lines.
+                   The lines height is defined by ESC 2,ESC 3.
+
+ESC = n             Set print online or offline
+Format:                       ASCII: ESC = n
+                            Decimal: 27 61 n
+                     Hexadecimal: 1B 3d n
+Description:        n = 0,1
+                    1: Online
+                    0: Offline
+
+5.2.2 Line spacing setting command
+
+ESC 2                  Select default line spacing
+Format:                          ASCII: ESC 2
+                               Decimal: 27 50
+CSN-A2 Micro panel thermal printer                                            12/26
+
+
+                         Hexadecimal: 1B 32
+Description:           ESC 2 sets the line space to default value (32dots)
+
+ESC 3 n                Set line spacing
+Format:                           ASCII: ESC 3 n
+                               Decimal: 27 51 n
+                          Hexadecimal: 1B 33 n
+Description:           n = 0-255
+                       ESC 3 n sets the line spacing to n dots.
+                       The default value is 32
+
+ESC a n                Select align mode
+Format:                           ASCII: ESC a n
+                               Decimal: 27 97 n
+                           Hexadecimal: 1B 61 n
+Description:           Default is 0
+                       0 ≤ m ≤ 2 or 48 ≤ m ≤ 50
+                       Align left:  n=0,48
+                       Align middle: n=1,49
+                       Align right: n=2,50
+
+GS L nL nH             Set left space
+Format:                           ASCII: GS L nL nH
+                               Decimal: 29 76 nL nH
+                         Hexadecimal: 1D 4c nL nH
+Description:           Set the left space with dots
+                       Left space is nL+nH*256,unit:0.125mm,only supported in page
+                       mode.
+
+ESC $ nL nH            Set left space
+Format:                           ASCII: ESC $ nL nH
+                               Decimal: 27 36 nL nH
+                         Hexadecimal: 1B 24 nL nH
+Description:           Set the left space with dots
+                       Left space is nL+nH*256,unit:0.125mm
+
+ESC B n                Set left blank char numbers
+Format:                           ASCII: ESC B n
+                                Decimal: 27 66 n
+                          Hexadecimal: 1B 42 n
+Description:           Default is 0
+                       0 ≤ m ≤ 47
+CSN-A2 Micro panel thermal printer                                         13/26
+
+
+5.2.3 Character Setting Commands
+
+ESC ! n                Select print mode
+Format:                          ASCII: ESC ! n
+                               Decimal: 27 33 n
+                         Hexadecimal: 1B 21 n
+Description:
+   The default value is 0. This command is effective for all characters.
+      BIT0:
+      BIT1:
+      BIT2:
+             00: Font9X8
+             01: Font5X7
+             02: Font6X12
+      BIT3: 1:Emphasized mode selected
+              0:Emphasized mode not selected
+      BIT4: 1:Double Height mode selected
+              0:Double Height mode not selected
+      BIT5: 1:Double Width mode selected
+              0:Double Width mode not selected
+      BIT6: 1:Delete line mode selected
+              0:Delete line mode not selected
+      BIT7: 1:Underline mode selected
+              0:Underline mode not selected
+
+GS ! n                 Set the font enlarge
+Format:                           ASCII: GS ! n
+                               Decimal: 29 33 n
+                         Hexadecimal: 1D 21 n
+Description:           D3..0 0: height don’t enlarge
+                              1: height enlarge
+                       D7..4 0: width don’t enlarge
+                              1: width enlarge
+
+ESC E n                Set and cancel bold font
+Format:                            ASCII: ESC E n
+                                 Decimal: 27 69 n
+                            Hexadecimal: 1B 45 n
+Description:           D0: 0: normal
+                           1: bold
+
+ESC SP n               Set and cancel bold font
+Format:                           ASCII: ESC SP n
+                                Decimal: 27 32 n
+CSN-A2 Micro panel thermal printer                                        14/26
+
+
+                            Hexadecimal: 1B 20 n
+Description:           D0: 0: normal
+                           1: bold
+
+ESC SO                 Select Double Width mode
+Format:                            ASCII: ESC SO
+                                 Decimal: 27 14
+                            Hexadecimal: 1B 0E
+Description:           Select Double Width mode
+                       To turn double width off, use LF or DC4 command.
+
+ESC DC4                Disable Double Width mode
+Format:                           ASCII: ESC DC4
+                                Decimal: 27 20
+                           Hexadecimal: 1B 14
+Description:           Disable Double Width mode
+
+ESC { n                Set/Cancel Character Updown mode
+Format:                            ASCII: ESC { n
+                                 Decimal: 27 123 n
+                            Hexadecimal: 1B 7B n
+Description:           n=1:Enable Updown mode
+                       n=0:Disable Updown Mode
+                       Default value is 0
+
+GS B n                 Turn white/black reverse printing mode on/off
+Format:                            ASCII: GS B n
+                                 Decimal: 29 66 n
+                           Hexadecimal: 1D 42 n
+Description:           n=1:Enable white/black reverse mode
+                       n=0:Disable white/black reverse mode
+                       Default value is 0
+
+ESC - n                Set the underline height
+Format:                            ASCII: ESC - n
+                                  Decimal: 27 45 n
+                            Hexadecimal: 1B 2D n
+Description:           n=0-2,the underline dots
+                       default: 0 — no underline
+
+ESC % n                Enable/Disable User-defined Characters
+Format:                           ASCII: ESC % n
+                                Decimal: 27 37 n
+                           Hexadecimal: 1B 25 n
+CSN-A2 Micro panel thermal printer                                                15/26
+
+
+Description:           n=1:Enable User-defined character
+                       n=0:Disable User-defined character
+
+ESC & s n m w Define User-defined characters
+Format:                  ASCII: ESC & s n m w d1 d2 … dx
+                       Decimal: 27 38 s n m w d1 d2 … dx
+                   Hexadecimal: 1B 26 s n m w d1 d2 … dx
+Description:
+       The command is used to define user-defined character.Max 64 user chars can
+be defined.
+       s= 3,32≤ n ≤ m < 127
+       s: Character height bytes, =3(24dots)
+       w: Character width 0～12(s=3)
+       n: User-defined character starting code
+       m: User-defined characters ending code
+       dx:data，x=s*w
+s=3                                                   dx format:
+
+d1     d4 d7                                                     D7
+d2     d5 d8                                                     D6
+d3     d6 d9                           d36                       D5
+                                                                 D4
+                                                            Dx
+                                                                 D3
+                                                                 D2
+                                                                 D1
+                                                                 D0
+
+ESC ? n           Disable user-defined character
+Format:                      ASCII: ESC ? n
+                           Decimal: 27 37 n
+                      Hexadecimal: 1B 3F n
+Description:
+   ESC ? n disable user-defined characters, printer will use the internal character.
+
+ESC R n           Select an internal character set
+Format:                       ASCII: ESC R n
+                            Decimal: 27 82 n
+                      Hexadecimal: 1B 52 n
+Description:
+   Select an internal character set n as follows:
+   0:USA           5:Sweden         10:Denmark II
+   1:France         6:Italy          11:Spain II
+   2:Germany        7:Spain1          12:Latin America
+   3:U.K.           8:Japan           13:Korea
+CSN-A2 Micro panel thermal printer                                            16/26
+
+
+     4:Denmark 1            9:Norway
+
+ESC t n    Select character code table
+Format:            ASCII: ESC t n
+                 Decimal: 27 116 n
+             Hexadecimal: 1B 74 n
+Description:
+   Select a page n from the character code table as follows:
+   0:437 1:850
+
+5.2.4 Bit Image Command
+
+ESC * m n1 n2 d1 d2…dk           Select bit-image mode
+Format:                   ASCII: ESC * m n1 n2 d1 d2 … dk
+                        Decimal: 27 42 m n1 n2 d1 d2 … dk
+                   Hexadecimal: 1B 2A m n1 n2 d1 d2 … dk
+Description:
+Attention: The command may clear the user defined char.
+This command selects a bit image mode using m for the number of dots specified by
+(nL+nH*256)
+m =0,1,32,33
+nL=0-255
+nH=0-3
+dx=0-255
+k = nL+256*nH (m=0,1)
+k = (nL+256*nH)*3 (m=32,33)
+The modes selected by m are as follows:
+0：8dots single density，102dpi
+1: 8dots double density，203dpi
+31:24 dots single density,102dpi
+32:24 dots double density,203dpi
+The bit image format is the same as user-defined character.
+
+Note: This version include a checksum for ESC * command, so if no correct checksum
+received after bit image data, the image will not printed. Checksum flow as follow:
+
+         1. Host sends FS C command as
+            0x1C, 0x43
+         2. Host sends graphics mode setting command as
+            0x1B, 0x2A , 0x00 , 0x05, 0x00
+         3. Host sends data bytes as
+            0x01,0x02, 0x44, 0x23, 0xA3
+         4. Checksum = 0x01 + 0x02 + 0x44 + 0x23 + 0xA3 = 0x010D
+         5. Now Host sends Checksum byte as only LSB i.e 0x0D
+CSN-A2 Micro panel thermal printer                                                       17/26
+
+
+         6. Host Sends FS S command
+             0x1C, 0x53
+         If both are matched (that means data received correctly)
+            Send ACK( 0xDD, 0x55, 0x1A)
+            Print the image data
+         Else
+            Send NAK( 0xDD, 0x55, 0x3E)
+            Do not print the image data
+
+GS / n            Print downloaded bit image
+Format:                       ASCII: GS / n
+                           Decimal: 29 47 n
+                       Hexadecimal: 1D 2F n
+Description：
+     This command prints a downloaded bit image using the mode specified by n as
+specified in the chart.In standard mode, this command is effective only when there
+is data in the print buffer. This command is ignored if a downloaded bit image has
+not been defined.
+                n=0-3、48-51: Specify bit image mode
+                 n        Pattern Mode Vertical DPI Horizontal DPI
+                 0,48     Normal         203DPI           203DPI
+                 1,49     Double width   203DPI           101DPI
+                 2,50     Double height 101DPI            203DPI
+                 3,51     Quadruple      101DPI           101DPI
+
+GS * x y d1…dk           Define downloaded bit image
+Format:                            ASCII: GS * x y d1 … dk
+                                Decimal: 29 42 x y d1 … dk
+                          Hexadecimal: 1D 2A x y d1 … dk
+Description:           This command defines a downloaded bit image by using x*8 dots in
+                       the horizontal direction and y*8 dots in the vertical direction. Once a
+                       downloaded bit image has been define, it is available until another
+                       definition is made.
+                       ESC & or ESC @ is executed
+                       The power is turned off
+                       The printer is reset
+                       x=1～48(width)，y＝1～255(height)，x×y < 1200, k=x×y×8
+
+GS v 0 p wL wH hL hH                    Print bitmap height and width
+Format:                          ASCII: GS v 0 p wL wH hL hH d1 … dk
+                               Decimal: 29 118 0 p wL wH hL hH d1 … dk
+                           Hexadecimal: 1D 76 3 p wL wH hL hH d1 … dk
+CSN-A2 Micro panel thermal printer                                                   18/26
+
+
+Description:          p: bitmap format.
+                           D0:     1: bitmap need double width
+                                   0: bitmap don’t need double width
+                           D1:     1: bitmap need double height
+                                   0: bitmap don’t need double height
+                      W=wL+wH*256 mean horital bytes
+                      H=wL+wH*256 mean vertical dots.
+                      Bitmap use MSB format, the MSB is printed at the left. And data sent
+                      first is printed at the left.
+
+DC2 * r n [d1…dn]                           Print bitmap
+Format:                             ASCII: DC2 * r n [d1 … dn]
+                                 Decimal: 18 42 r n [d1 … dn]
+                             Hexadecimal: 12 2A r n [d1 … dn]
+Description：           Printing bitmap with width & height
+                       r: Bitmap height
+                       n: Bitmap width
+                       Bitmap format:
+
+
+
+
+DC2 V nL nH [d1…dn]                        Print MSB Bitmap
+Format:                           ASCII: DC2 V nL nH [d1 … d48]
+                                Decimal: 18 86 nL nH [d1 … d48]
+                            Hexadecimal: 12 56 nL nH [d1 … d48]
+Description:           This command use to print MSB format bitmap,
+                       The width of bitmap must the same as the printer mechanism
+                       Bitmap height: nL+nH*256
+                       Bitmap format:
+CSN-A2 Micro panel thermal printer                                                  19/26
+
+
+
+
+DC2 v nL nH [d1…dn]                        Print LSB Bitmap
+Format:                           ASCII: DC2 v nL nH [d1 … d48]
+                                Decimal: 18 118 nL nH [d1 … d48]
+                           Hexadecimal: 12 76 nL nH [d1 … d48]
+Description：           This command use to print LSB format bitmap,
+                       The width of bitmap must the same as the printer mechanism
+                       Bitmap height: nL+nH*256
+                       Bitmap format:
+
+
+
+
+5.2.5 Key control command
+
+ESC c 5 n              Enable/Disable the panel key
+Format:                           ASCII: ESC c 5 n
+                               Decimal: 27 99 53 n
+                           Hexadecimal: 1B 63 35 n
+Description:           This command has no affection.
+                       n=1,Disable the panel key
+                       n=0,Enable the panel key(Default)
+
+5.2.6 Init command
+
+ESC @                  Initialize the printer
+Format:                              ASCII: ESC @
+                                   Decimal: 27 64
+CSN-A2 Micro panel thermal printer                                        20/26
+
+
+                              Hexadecimal: 1B 40
+Description :        Initializes the printer.
+            �        The print buffer is cleared.
+            �        Reset the parametric to default value.
+            �        return to standard mode
+            �        Delete user-defined characters
+
+
+5.2.7 Status Command
+
+ESC v n               Transmit paper sensor status
+Format:                          ASCII: ESC v n
+                               Decimal: 27 118 n
+                          Hexadecimal: 1B 76 n
+Description:        Transmit board status to host
+     Return:
+     P<Paper>V<Voltage>T<Degree>
+     Example:P1V72T30 Mean:Paper Ready,Current voltage 7.2V,Printer degree:30
+GS a n         Enable/Disable Automatic Status Back(ASB)
+Format:                   ASCII: GS a n
+                        Decimal: 29 97 n
+                  Hexadecimal: 1D 61 n
+Description:   n definition as follows:
+                                              Value
+                Bit     Function
+                                              0         1
+                0       0
+                1
+                2       Disable/Enable ASB    Disable Enable
+                3-4
+                        Disable/Enable RTS
+                5                             Disable Enable
+                        as flow control
+                6-7
+               When ASB is enabled, the printer will send the changed status to
+               PC automatically.
+
+ESC u n                              Transmit peripheral devices status
+Format:                     ASCII: ESC u n
+                          Decimal: 27 117
+                     Hexadecimal: 1B 75
+Description: This command is not supported.
+             Return status bytes definition:
+             bit0: Drawer status.
+             bit4: 0
+             Always return 0 back
+CSN-A2 Micro panel thermal printer                                                  21/26
+
+
+5.2.8 Bar Code Command
+
+GS H n                 Select printing position of human readable characters
+Format:                             ASCII: GS H n
+                                 Decimal: 29 72 n
+                            Hexadecimal: 1D 48 n
+Description:           0 ≤ n ≤3
+                       48 ≤ n ≤51
+                       This command selects the printing position for human readable
+                       characters when printing a bar code. The default is n=0. Human
+                       readable characters are printed using the font specified by GS fn.
+                       Select the printing position as follows:
+                       n     Printing Position
+                       0,48: not print HRI
+                       1,49: Above the bar code
+                       2,50: Below the bar code
+                       3,51:Both Above and below the bar code
+
+GS h n                 Set bar code height
+Format:                          ASCII: GS h n
+                               Decimal: 29 104 n
+                          Hexadecimal: 1D 68 n
+Description:           This command selects the height of a bar code. n specifies the
+                       number of dots in the vertical direction. The default value is 50
+                       1 ≤ n ≤ 255
+
+GS x n                 Set bar code printing left space
+Format:                          ASCII: GS x        n
+                               Decimal: 29 120 n
+                         Hexadecimal: 1D 78 n
+Description：           The print bar code staring positions is: 0(255
+
+GS w n                 Set bar code width
+Format:                          ASCII: GS w n
+                               Decimal: 29 119 n
+                          Hexadecimal: 1D 77 n
+Description:           This command selects the horizontal size of a bar code.
+                       n = 2,3
+                       The default value is 3
+
+GS k m d1 d2 … dk NUL     Print bar code
+GS k m n d1 d2 … dn
+Format1:               ASCII: GS k     m                  d1 d2 … dk NUL
+                     Decimal: 29 107 m                   d1 d2 … dk 0
+CSN-A2 Micro panel thermal printer                                                     22/26
+
+
+                  Hexadecimal: 1D 6B m      d1 d2 … dk 00
+Format2:                 ASCII: GS k    m n d1 d2 … dn
+                       Decimal: 29 107 m n d1 d2 … dn
+                  Hexadecimal: 1D 6B m n d1 d2 … dn
+Description:        m: bar code type
+              Format 1: 0 ≤ m ≤ 10
+              Format 2: 65 ≤ m ≤ 75
+                     n: bar code length
+m       Bar Code System Number of Characters Remarks
+0,65    UPC-A              11,12               48-57
+1,66    UPC-E              11,12               48-57
+2,67    EAN13              12,13               48-57
+3,68    EAN8               7,8                 48-57
+4,69    CODE39             >1                  32,36,37,43,45-57,65-90
+5,70    125                >1(even number)     48-57
+6,71    CODABAR            >1                  36,43,45-58,65-68
+7,72    CODE93             >1
+8,73    CODE128            >1                  0-127
+9,74    CODE11             >1                  0-127
+10,75 MSI                  >1                  48-57
+
+5.2.9 Control Parameter Command
+
+ESC 7 n1 n2 n3              Setting Control Parameter Command
+Format:                            ASCII: ESC 7 n1 n2 n3
+                               Decimal: 27 55 n1 n2 n3
+                          Hexadecimal: 1B 37 n1 n2 n3
+Description:           Set “max heating dots”,”heating time”, “heating interval”
+                       n1 = 0-255 Max printing dots,Unit(8dots),Default:7(64 dots)
+                       n2 = 3-255 Heating time,Unit(10us),Default:80(800us)
+                       n3 = 0-255 Heating interval,Unit(10us),Default:2(20us)
+                       The more max heating dots, the more peak current will cost when
+                       printing, the faster printing speed. The max heating dots is 8*(n1+1)
+                       The more heating time,the more density,but the slower printing
+                       speed. If heating time is too short, blank page may occur.
+                       The more heating interval,the more clear,but the slower printing
+                       speed.
+
+ESC 8 n1               Sleep parameter
+Format:                         ASCII: ESC 8 n1
+                              Decimal: 27 56 n1
+                          Hexadecimal: 1B 38 n1
+CSN-A2 Micro panel thermal printer                                                  23/26
+
+
+Description:           Setting the time for control board to enter sleep mode.
+                       n1 = 0-255 The time waiting for sleep after printing
+                       finished,Unit(Second),Default:0(don’t sleep)
+                       When control board is in sleep mode, host must send one byte(0xff)
+                       to wake up control board. And waiting 50ms, then send printing
+                       command and data.
+                       NOTE:The command is useful when the system is powered by
+                       battery.
+
+DC2 # n                Set printing density
+Format:                           ASCII: DC2 # n
+                               Decimal: 18 35 n
+                         Hexadecimal: 12 23 n
+Description：           D4..D0 of n is used to set the printing density
+                       Density is 50% + 5% * n(D4-D0)
+                       D7..D5 of n is used to set the printing break time
+                           Break time is n(D7-D5)*250us
+
+DC2 E                  Feed paper to mark
+Format:                         ASCII: DC2 E
+                              Decimal: 18 69
+                         Hexadecimal: 12 45
+Description:           Feed paper to the Mark position
+
+DC2 m d 1l 1h          Set mark paper length
+Format:                          ASCII: DC2 m d 1l 1h
+                               Decimal: 18 109 d 1l 1h
+                          Hexadecimal: 12 6d d 1l 1h
+Description：           d = 0,1
+                        1:stop at mark position
+                        0:go on 3 steps after mark position detected
+
+                       0 ≤ ll ≤ 255
+                       0 ≤ lh ≤ 255
+                       Paper length is (ll+lh*256) steps,means (ll+lh*256)/8 mm
+
+DC2 T                  Printing test page
+Format:                             ASCII: DC2 T
+                                  Decimal: 18 84
+                            Hexadecimal: 12 54
+Description：           Printing the test page
+CSN-A2 Micro panel thermal printer                                                 24/26
+
+
+FS C                   Start Checksum
+Format:                           ASCII: FS C
+                                Decimal: 28 67
+                            Hexadecimal: 1C 43
+Description：           Start Checksum for ESC * command
+
+FS S                   Check if ESC * command received correct
+Format:                              ASCII: FS S
+                                   Decimal: 28 83
+                             Hexadecimal: 1C 53
+Description：           If ESC * data checksum received correctly,it return(HEX):
+                       0xDD,0x55,0x1A
+                       Else it return(HEX):
+                       0xDD,0x55,0x3E
+CSN-A2 Micro panel thermal printer                                                          25/26
+
+
+
+APPENDIXA CODE PAGE
+PC437
+      _0     _1     _2     _3        _4   _5   _6   _7   _8   _9   _A _B _C       _D   _E    _F
+
+
+8_
+      Ç      ü       é      â        ä    à    å    ç    ê    ë    è    ï    î    ì    Ä      Å
+
+9_
+      É      æ Æ            ô        ö    ò    û    ù    ÿ    Ö    Ü    ¢    £    ¥    ₧      ƒ
+
+A_
+      á       í      ó      ú        ñ    Ñ    ª    º    ¿    ⌐    ¬    ½    ¼    ¡    «      »
+
+B_
+      ░      ▒      ▓      │         ┤    ╡    ╢    ╖    ╕    ╣    ║    ╗    ╝    ╜    ╛      ┐
+
+C_
+      └      ┴      ┬      ├         ─    ┼    ╞    ╟    ╚    ╔    ╩    ╦    ╠    ═    ╬      ╧
+
+D_
+      ╨      ╤      ╥      ╙         ╘    ╒    ╓    ╫    ╪    ┘    ┌    █    ▄    ▌    ▐      ▀
+
+E_
+      α      ß       Γ     π         Σ    σ    µ    τ    Φ    Θ    Ω    δ    ∞    φ    ε     ∩
+
+F_
+      ≡       ±      ≥      ≤        ⌠    ⌡    ÷    ≈    °    ·    ·    √    ⁿ    ²    ■
+
+PC850
+
+      _0     _1     _2     _3        _4   _5   _6   _7   _8   _9   _A   _B   _C   _D   _E    _F
+
+
+       Ç      ü      é      â        ä    à    å    ç    ê    ë    è    ï    î    ì    Ä      Å
+8_
+
+       É     æ      Æ       ô        ö    ò    û    ù    ÿ    Ö    Ü    ø    £    Ø    ×      ƒ
+9_
+
+       á      í      ó      ú        ñ    Ñ    ª    º    ¿    ®    ¬    ½    ¼    ¡    «      »
+A_
+
+       ░      ▒      ▓      │        ┤    Á    Â    À    ©    ╣    ║    ╗    ╝    ¢    ¥      ┐
+B_
+
+       └      ┴      ┬      ├        ─    ┼    ã    Ã    ╚    ╔    ╩    ╦    ╠    ═    ╬      ¤
+C_
+
+       ð      Ð      Ê      Ë        È    I    Í    Î    Ï    ┘    ┌    █    ▄    ¦    Ì      ▀
+D_
+
+       Ó      ß      Ô      Ò        õ    Õ    µ    þ    Þ    Ú    Û    Ù    ý    Ý    ¯      ´
+E_
+
+       -      ±      ‗      ¾        ¶    §    ÷    ¸    °    ¨    ·    ¹    ³    ²    ■
+F_
+CSN-A2 Micro panel thermal printer                                                    26/26
+
+
+
+APPENDIXB International characters
+
+                                                     ASCII Code(Hex)
+            County
+                              23     24   40   5B   5C 5D 5E 60        7B   7C   7D    7E
+0           U.S.A.            #       $   @     [    \    ]   ^    `    {    |    }     ~
+1           France            #       $    à    ◦    ç   §    ^    `    é    ù    è     ¨
+2         Germany             #       $    §   Ä    Ö    Ü    ^    `    ä    ö    ü     ß
+3            U.K.             £       $   @     [    \    ]   ^    `    {    |    }     ~
+4        Denmark Ⅰ            #       $   @    Æ    Ø    Å    ^    `   æ     ø    å     ~
+5          Sweden             #       ¤   É    Ä    Ö    Å    Ü    é    ä    ö    å     ü
+6            Italy            #       $   @     °    \   é    ^    ù    à    ò    è     ì
+7         Spain Ⅰ             Pt      $   @     ¡   Ñ    ¿    ^    `    ¨    ñ    }     ~
+8           Japan             #       $   @     [    ¥    ]   ^    `    {    |    }     ~
+9          Norway             #       ¤   É    Æ    Ø    Å    Ü    é   æ     ø    å     ü
+10       Denmark Ⅱ            #       $   É    Æ    Ø    Å    Ü    é   æ     ø    å     ü
+11        Spain Ⅱ             #       $    á    ¡   Ñ    ¿    é    `    í    ñ    ó     ú
+12      Latin America         #       $    á    ¡   Ñ    ¿    é    ü    í    ñ    ó     ú
+13          Korea             #       $   @     [   W     ]   ^    `    {    |    }     ~
+

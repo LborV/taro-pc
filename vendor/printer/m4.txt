@@ -1,0 +1,425 @@
+CSN-A2 User manual                       1/70
+
+
+
+
+          CSN-A2 Micro panel printer's
+                 User Manual
+
+
+
+
+                     Version4.0
+CSN-A2 User manual                                                                                                                  2/70
+
+
+
+                                                       Content
+CAUTIONS ........................................................................................................................... 3
+1 General Specifications.......................................................................................................... 4
+2 Features .............................................................................................................................. 4
+3 Printer outline pictures and dimension ................................................................................... 5
+     3.1 Outline pictures ......................................................................................................... 5
+     3.2 Dimension................................................................................................................. 5
+4 Operation specifications and print test ................................................................................... 6
+     4.1 Operation specifications ............................................................................................. 6
+     4.2 Printing test ............................................................................................................... 7
+5 Connector ........................................................................................................................... 7
+     5.1 TTL or RS232 connector ............................................................................................ 7
+     5.2 Parallel connector ...................................................................................................... 8
+     5.3 USB connector .......................................................................................................... 9
+           5.3.1 J3 Power supply connector ............................................................................... 9
+           5.3.2 CN4 TTL connector ......................................................................................... 9
+           5.3.3 CN3 USB /MINID connector............................................................................ 9
+           5.3.4 J2 Integrated Keyboard functions: ................................................................... 10
+6 printer functions ................................................................................................................ 10
+7 Using attention .................................................................................................................. 11
+8 ESC/POS Printing Command Set ........................................................................................ 11
+     8.1 Command list .......................................................................................................... 11
+     8.2 Command Detail...................................................................................................... 13
+           8.2.1 Print Commands ............................................................................................ 13
+           8.2.2 Line spacing setting commands....................................................................... 16
+           8.2.3 Character Setting Commands .......................................................................... 18
+           8.2.4 Bit Image Command ...................................................................................... 29
+           8.2.5 Init command ................................................................................................ 40
+           8.2.6 Status Command............................................................................................ 40
+           8.2.7 Bar Code Command....................................................................................... 42
+           8.2.8 Miscellaneous Function Command.................................................................. 47
+           8.2.9 New commands ............................................................................................. 49
+Appendix 1 Code page .......................................................................................................... 54
+Appendix 2 International character set: .................................................................................. 69
+CSN-A2 User manual                                                                       3/70
+
+
+
+CAUTIONS
+
+1. This document shall apply only to the product(s) identified herein.
+
+2. No part of this document may be reproduced, stored in a retrieval system, or
+transmitted in any form or by any means, electronic, mechanical, photocopying, recording,
+or otherwise, without the prior written permission of Kashino Technology Limited.
+
+3. The contents of this document are subject to change without notice. Please contact us
+for the latest information.
+
+4. While every precaution has been taken in the preparation of this document, Kashino
+Technology Limited assumes no responsibility for errors or omissions.
+
+5. Neither is any liability assumed for damages resulting from the use of the information
+contained herein.
+
+6. Kashino Technology Limited shall be not liable to the purchaser of this product or third
+parties for damages, losses, costs, or expenses incurred by the purchaser or third parties
+as a result of: accident, misuse, or abuse of this product or unauthorized modifications,
+repairs, or alterations to this product, or failure to strictly comply with Kashino Technology
+Limited 's operating and maintenance instructions.
+
+7. Kashino Technology Limited shall not be liable against any damages or problems
+arising from the use of any options or any consumable products other than those
+designated as Original Kashino Products or Kashino Approved Products by Kashino
+Technology Limited.
+CSN-A2 User manual                                                                4/70
+
+
+
+1 General Specifications
+
+ITEM                                         SPECIFICATION
+Print method                                 thermal direct line printing
+Paper loading method                         easy paper loading
+Paper width                                  58mm
+Print width                                  48mm
+Resolution ration                            8dots/mm(384dots/line)
+Life of printing head                        50km
+Printing speed                               60mm/sec.; Max.:80MM/sec.(voltage 8.5V）
+Character size                               ANK: 9x17,12×24; GBK: 24×24
+Chinese character fonts                      GB18030: 12x24 or 24x24dots
+Outline dimension（WxHxD mm)                  111x65x57
+Installation(WxH mm):                        103x57
+Embedded depth                               50 mm
+Paper roll specification                     (width:58mm, Max. diameter:39mm)
+Interface                                    RS232C/TTL/parallel/USB
+Input power                                  DC5-9V or 12V
+Operating temperature                        5°C~50°C
+Storage temperature                          -20°C~60°C
+Operating humidity                           10°C~80°C
+Storage humidity                             10°C~90°C
+
+
+
+2 Features
+
+   Low-noise direct thermal printing method
+   Printer control panel built-in ANK character or GB18030 Chinese character,
+    thoroughly remove the uncommon words of anguish
+   Fast printing speed, low noise
+   Can support Max.39mm (diameter) paper roll, which is biggest paper roll of the same
+    models.
+   Optional serial interface (RS232C/TTL)/parallel/USB port
+   Rich of graphics / curves / characters print function
+   Easy paper loading structure
+   Support 5V-9V/12V wide power voltage
+CSN-A2 User manual                         5/70
+
+
+
+3 Printer outline pictures and dimension
+
+3.1 Outline pictures
+
+
+
+
+   Outline dimension: 111W*65D*57H mm
+   Front panel Size: 103 W*57H mm
+   Embedded depth: 50 mm
+   Max diameter of paper roll: 39 mm
+
+
+3.2 Dimension
+
+Outline is as follows:
+CSN-A2 User manual                                                                         6/70
+
+
+
+
+The installation method:
+Put the panel printer into the front of the device as per Fig.1 and Fig.2,and then install
+fixed block and screwing as per Fig.3
+Note: have 1 to 6mm variation in thickness.
+
+
+
+
+4 Operation specifications and print test
+
+4.1 Operation specifications
+
+A. the instruction of indicator light
+Power on, the indicator light will flash 2 times, interval 1sec, it say the startness is OK, and
+CSN-A2 User manual                                                                         7/70
+
+
+then the instructions for the indicator light as below:
+ Blink once:                  Work well (Stay lit for some customized board)
+ Blink twice:                Printer mechanism is ununited or temperature is too low.
+ Blink three times:          No paper is detected
+ Blink four times:           Cutter is wrong (Just for board with cutter)
+ Blink five times:            Printer mechanism is overheat
+ Blink six times:            Roller didn't press well. (Just for board with roller detection.
+ Blink ten times:            Flash device is wrong for the board
+
+B. key instruction
+The key on the panel printer is FEED key
+
+C. how to change new paper roller
+Before changing, turn up the switch, and put into the paper roller
+
+
+4.2 Printing test
+
+Power on, press the [feed] key, for a while, relax the key, it will print out one testing
+sample.
+Power on, press key per time, it will feed the paper.
+
+
+5 Connector
+
+The user has option of RS232, TTL, USB and LPT interface.
+
+
+5.1 TTL or RS232 connector
+
+
+
+
+The define of the PIN of the interface for RS232, TTL as the following:
+
+                             Pin               Signal name
+                          number
+                               1               GND(Ground)
+                               2               NULL
+CSN-A2 User manual                                                                    8/70
+
+
+                             3             VH(input voltage ，
+                                       5V-9V)
+                             4              GND(Ground)
+                             5              RXD(receive data)
+                             6              TXD( send data)
+
+
+5.2 Parallel connector
+
+
+
+
+The define of the Pin of LPT interface as below:
+1              GND， Ground
+2              VH，       input voltage，5V-9V
+3              +5V，       input voltage (general condition, only use +5Vm VH not input )
+4              the definition of the Pin of LPT interface as below:
+               1. STROBE
+               2-9. DATA0-DATA7
+               10. ACKNLG
+               11. BUSY
+               12. PE           paper out
+               13. SLCT selection
+               14. AUTO FEED auto change line
+               15. ERROR
+               16. INIT
+               17. SLCT IN
+               18-26. GND
+CSN-A2 User manual                                                              9/70
+
+
+
+5.3 USB connector
+
+
+
+
+37.00mm                                                               30.00mm
+
+
+
+
+          6.00mm
+
+
+
+
+5.3.1 J3 Power supply connector
+                           Pin number     Signal name
+                                 1              VH
+                                 2             GND
+
+5.3.2 CN4 TTL connector
+                   Pin number   Signal name
+                   1            +3.3V
+                   2            Transmit data (TXD, printer output)
+                   3            Receive data (RXD, printer input)
+                   4            GND
+
+5.3.3 CN3 USB /MINID connector
+                           Pin number     Signal name
+                           1              VUSB
+                           2              D-
+                           3              D+
+                           4              NC
+                           5              GND
+CSN-A2 User manual                                                                       10/70
+
+
+5.3.4 J2 Integrated Keyboard functions:
+                            Pin number        Signal name
+                            1                 LED
+                            2                 +3.3V
+                            3                 +3.3V
+                            4                 KEY_FEED
+
+
+6 printer functions
+
+                                   CN1     FPC30/1.0
+
+
+Pin number           Signal name         Function
+1             PHK                        Cathode of photo interruptor
+2             VSEN                       Photo-sensor power
+3             PHE                        Emittor for photo interruptor
+4             MT/B                       Step motor excitation signal
+                     --
+5             MT/B                       Step motor excitation signal
+6             MT/A                       Step motor excitation signal
+                     --
+7             MT/A                       Step motor excitation signal
+8             VH                         Head driver power
+9             VH                         Head driver power
+10            DI                         Data input
+11            CLK                        Aynchronous clock for communication
+12            GND                        Ground power supply for thermal head
+13            GND                        Ground power supply for thermal head
+14            STB6                       Thermal head energizing control signal
+15            STB5                       Thermal head energizing control signal
+16            STB4                       Thermal head energizing control signal
+17            VDD                        Logic power
+18            TM                         Thermally sensitive resistor input terminal 1
+19            TM                         Thermally sensitive resistor input terminal 2
+20            STB3                       Thermal head energizing control signal
+21            STB2                       Thermal head energizing control signal
+22            STB1                       Thermal head energizing control signal
+23            GND                        Ground power supply for thermal head
+24            GND                        Ground power supply for thermal head
+25            \LAT                       Data Latch
+26            DO                         Data output
+27            VH                         Power supply for thermal head
+28            VH                         Power supply for thermal head
+29            N.C(101)SW1(103)           Platen release switch
+30            N.C(101)SW2(103)           Platen release switch
+CSN-A2 User manual                                                                     11/70
+
+
+
+7 Using attention
+
+7.1 Please notice, the ESD wrist ring and the humidity manufatures ETC, when using the
+printer, to protect the inner elctrontic parts of the printer from the damage of ESD, because
+the TPH of the Printer and photoelectric sensor are ESD Sensitive parts.
+
+7.2 For protecting plastic shaft, don’t smear any oil or others on the rubber parts.
+
+7.3 Don’t touch the TPH, TPH having the palm oil, will induce the usage of the printer.If
+any oil or others in the TPH, pls using an alcohol cotton stick clean the area between
+plastic shaft and printer head at once.PS,Don’t strike the TPH.
+
+7.4 Due to the printer is easy-paper structure,you need pick up the rubber stick only push
+the rubber stick.So,if the paper jam,push harder will cause the rubber stick gearwheel
+damaged.so pls don’t push the paper harder, pls do open the cover and re-fill the paper
+
+7.5 The temperature of the TPH protection must be below 65 ℃ , if you print
+continously,Because the exterior of the temperature of the IC protection & motor can’t not
+over 90℃ to protect the motor thread ring.
+
+7.6 Pls use the good quality paper, because the sensetive of the paper will infuence print
+effect, meanwhile, rough paper will incease the excessive wear to the printer head, and
+reduce the life of the printer.
+
+
+8 ESC/POS Printing Command Set
+
+8.1 Command list
+
+Type                   Command             Name
+                       LF                  Print and line feed
+                       CR                  Print and carriage return
+                       HT                  Horizontal tab
+                       FF                  Print the data in buffer
+Print Commands
+                       ESC D               Set horizontal tab positions
+                       ESC J n             Print and Feed n dots paper
+                     ESC d n               Print and Feed n lines
+                     ESC = n               Set peripheral device
+                     ESC 2                 Select default line spacing
+                     ESC 3 n               Set line spacing
+Line spacing setting
+                     ESC a n               Select justification
+Commands
+                     GS L nL nH            Set left margin
+                     ESC $ nL nH           Set absolute print position
+CSN-A2 User manual                                                                12/70
+
+
+                   ESC B n          Set Left Space
+                   ESC ! n          Select print mode(s)
+                   GS ! n           Select character size
+                   GS B n           Turn white/black reverse printing mode
+                   ESC V n          Turn 90°clockwise rotation mode on/off
+                   ESC G n          Turn on/off double-strike mode
+                   ESC E n          Turn emphasized mode on/off
+                   ESC SP n         Set right-side character spacing
+                   ESC SO n         Select Double Width mode
+                   ESC DC4 n        Disable Double Width mode
+Character Setting
+                   ESC { n          Turns on/off upside-down printing mode
+Commands
+                   ESC - n          Set the underline dots(0,1,2)
+                   ESC % n          Select/Cancel user-defined characters
+                   FS &             Select Kanji character mode
+                   FS .             Cancel Kanji character mode
+                   FS ! n           Set print mode for Kanji characters
+                   ESC &            Define user-defined characters
+                   ESC ? n          Cancel user-defined characters
+                   ESC R n          Select and international character set
+                   ESC t n          Select character code table
+                   ESC *            Select bit-image mode
+                   GS *             Define downloaded bit image
+                   GS / n           Print downloaded bit image
+                   GS v             Print raster bit image
+Bit          Image
+                   DC2 *            Print the bitmap
+Commands
+                   DC2 V            Print MSB bitmap
+                   DC2 v            Print LSB bitmap
+                   FS p n m         Print NV bitmap
+                   FS q n           Define NV bitmap
+Init Commands      ESC @            Initialize printer
+                   GS r n           Transmit status
+                   GS a n           Enable/Disable Automatic Status Back(ASB)
+Status Commands
+                   ESC v n          Transmit paper sensor status
+                   ESC u n          Transmit peripheral device status (For drawer)
+                   GS H n           Select printing position for HRI characters
+                   GS h n           Set bar code height
+Bar           Code
+                   GS w n           Set bar code width
+Commands
+                   GS k             Print bar code
+                   GS x n           Set barcode printing left space
+                   ESC 7 n1 n2 n3   Setting Control Parameter Command
+Miscellaneous      ESC 8 n1 n2      Select sleeping parameter
+function commands ESC 9 n           Select Chinese code format
+                   DC2 # n          Set printing density
+
