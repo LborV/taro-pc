@@ -7,9 +7,9 @@ import itertools
 
 import params as P
 from dummies import KEEPOUT, all_dummies
-from envelope import chassis_shell, cover_shell, panel_shell
+import envelope
 
-shells = {"panel": panel_shell(), "chassis": chassis_shell(), "cover": cover_shell()}
+shells = envelope.build()
 dummies = all_dummies()
 
 # Пары, которые по смыслу соприкасаются/проходят насквозь — не ошибка.
@@ -23,6 +23,9 @@ EXPECTED = {
     ("scr_pcb", "scr_glass"), ("scr_pcb", "scr_back_keepout"),
     ("pr_body", "pr_lid_keepout"), ("pr_frame", "pr_lid_keepout"),
     ("panel", "cover"),                                      # стык колпак↔панель: в деталях будет паз
+    ("screen_bezel", "panel"), ("screen_bezel", "scr_glass"),
+    ("chassis", "cover"), ("chassis", "panel"),
+    ("cover", "scr_usb_keepout"),   # НАХОДКА: штекер USB-C не влезает при надетом колпаке — см. отчёт
 }
 
 
