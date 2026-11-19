@@ -7,8 +7,10 @@ import math
 
 from build123d import Box, Compound, Cone, Cylinder, Location, Plane, Pos, Vector
 
+from dummies import box_xyz
+
 import params as P
-from dummies import screen_plane
+from dummies import screen_plane  # noqa: E402
 
 CSK_H = (P.M3_HEAD_CSK_D - P.M3_CLEAR) / 2   # высота потайной головки (90°)
 
@@ -78,31 +80,34 @@ def bottom_bosses():
     return out
 
 
-def rails():
-    """Верхние балки каркаса: от экранной грани до задней стенки."""
-    w, h = P.RAIL_SEC
-    z = P.RAIL_Z
-    # внутренняя грань экранной панели на высоте z
-    y_front = P.Y_TILT + (z - P.BAND_H) * math.tan(P.TILT) + P.WALL / math.cos(P.TILT)
-    y_back = wall_in_rear(z)
-    out = {}
-    for side, sx in (("l", -1), ("r", 1)):
-        x = sx * P.RAIL_X
-        out[f"rail_{side}"] = Pos(x, (y_front + y_back) / 2, z) * Box(w, y_back - y_front - 0.2, h)
-    return out, y_front, y_back
+def front_in_y(z):
+    """Y внутренней грани экранной части передней панели на высоте z."""
+    return P.Y_TILT + (z - P.BAND_H) * math.tan(P.TILT) + P.WALL / math.cos(P.TILT)
 
 
-def roof_blocks():
-    """Уголки крыша↔бок (печатные), под крышей у боковин."""
-    z1 = P.H - P.WALL
-    z0 = z1 - 9.0
-    yc = (P.Y_TOP_FRONT + P.Y_TOP_REAR) / 2
-    out = {}
-    for side, sx in (("l", -1), ("r", 1)):
-        for k, dy in (("f", -P.ROOF_BLOCK_DY), ("b", P.ROOF_BLOCK_DY)):
-            xo = wall_in_side(z0) - 0.3
-            out[f"roof_block_{side}{k}"] = Pos(sx * (xo - 5.5), yc + dy, (z0 + z1) / 2) * Box(11.0, 12.0, z1 - z0)
-    return out
+def rear_in_y(z):
+    return wall_in_rear(z)
+
+
+def top_tab(x, sgn, y_in):
+    """Г-язычок на панели + паз в крыше. sgn=+1: панель спереди, язычок идёт назад."""
+    t, w = 3.0, 12.0
+    z_arm0 = P.TAB_Z - 4.0                  # горизонтальное плечо
+    z_top = P.TAB_Z + P.TAB_FIN_H           # верх пера
+    y0 = y_in(z_arm0) - sgn * 2.0           # врастает в стенку
+    # перо — за наклонной стенкой даже на её верхней кромке, иначе ребро паза влезет в стенку
+    y_top_edge = y_in(P.H - P.R_EDGE - 0.5)
+    y_fin = y_top_edge + sgn * (0.6 + 2.4 + P.FIT)
+    arm = box_xyz(x - w / 2, x + w / 2, min(y0, y_fin), max(y0, y_fin), z_arm0, P.TAB_Z)
+    fin = box_xyz(x - w / 2, x + w / 2, min(y_fin, y_fin + sgn * t), max(y_fin, y_fin + sgn * t), z_arm0, z_top)
+    tab = arm + fin
+    # паз: два ребра с зазором FIT вокруг пера, свисают из-под крыши
+    zr0 = P.TAB_Z + 1.0
+    zr1 = P.H - P.WALL + 1.0
+    lo, hi = sorted((y_fin, y_fin + sgn * t))
+    rib_a = box_xyz(x - w / 2 - 3, x + w / 2 + 3, lo - P.FIT - 2.4, lo - P.FIT, zr0, zr1)
+    rib_b = box_xyz(x - w / 2 - 3, x + w / 2 + 3, hi + P.FIT, hi + P.FIT + 2.4, zr0, zr1)
+    return tab, rib_a + rib_b
 
 
 # ------------------------------------------------------------------ сборка
@@ -123,31 +128,13 @@ def apply(parts, inner, body):
         hw_inserts.append(insert((x, y, zb), (0, 0, 1)))
     parts["base"] = parts["base"] - base_cuts
 
-    # 2) верхние балки каркаса: площадки на панелях, балка между ними, винт по оси Y в каждый торец
-    rl, y_front, y_back = rails()
-    pad_t = 5.0
-    for name, r in rl.items():
-        x = r.center().X
-        w, h = P.RAIL_SEC
-        parts[name] = Pos(x, (y_front + y_back) / 2, P.RAIL_Z) * Box(w, y_back - y_front - 2 * (pad_t + 3.0) - 0.4, h)
-        for y_end, sgn, part in ((y_front, -1, "front_screen"), (y_back, 1, "rear")):
-            y_face = y_end - sgn * (pad_t + 3.0)       # торец площадки (наклон грани ±2.9 мм по высоте балки)
-            y0, y1 = sorted((y_end + sgn * 3.0, y_face))
-            pad = Pos(x, (y0 + y1) / 2, P.RAIL_Z) * Box(P.BOSS_D + 2, y1 - y0, P.BOSS_D + 2)
-            pad = pad & solid_in
-            hole = _frame((x, y_face, P.RAIL_Z), (0, sgn, 0)) * Pos(0, 0, P.INSERT_DEPTH / 2 - 0.01) * \
-                Cylinder(P.INSERT_HOLE / 2, P.INSERT_DEPTH)
-            parts[part] = parts[part] + pad - hole
-            hw_screws.append(screw((x, y_face - sgn * 9.0, P.RAIL_Z), (0, sgn, 0), 14.0, head="pan"))
-            hw_inserts.append(insert((x, y_face, P.RAIL_Z), (0, sgn, 0)))
-
-    # 3) уголки крыша↔бок: винт вверх в крышу и вбок в боковину
-    for name, blk in roof_blocks().items():
-        parts[name] = blk & inner
-        c = blk.center()
-        sx = 1 if c.X > 0 else -1
-        hw_screws.append(screw((c.X - sx * 1.5, c.Y, c.Z - 4.5), (0, 0, 1), 8.0, head="pan"))
-        hw_screws.append(screw((c.X - sx * 5.5, c.Y, c.Z), (sx, 0, 0), 10.0, head="pan"))
+    # 2) верх передней и задней панели держит крыша: на панели Г-образный язычок с вертикальным пером,
+    #    в крыше паз из двух рёбер. Всё вертикальное → колпак снимается строго вверх.
+    for part, sgn, y_in in (("front_screen", 1, front_in_y), ("rear", -1, rear_in_y)):
+        for x in (-P.TAB_X, P.TAB_X):
+            tab, slot_ribs = top_tab(x, sgn, y_in)
+            parts[part] = parts[part] + (tab & solid_in)
+            parts["roof"] = parts["roof"] + (slot_ribs & solid_in)
 
     # 4) стойки экрана на лицевой панели (вставки, винты со стороны платы)
     loc = Location(screen_plane())

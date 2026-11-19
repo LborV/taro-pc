@@ -25,7 +25,7 @@ EXPECTED = {
     ("screen_bezel", "front_screen"),
     ("side_l", "scr_usb_keepout"),               # НАХОДКА: штекер USB-C не влезает при надетом колпаке — см. отчёт
 }
-EXPECTED |= {(a, b) for a in PANELS for b in PANELS}   # стыки панелей (касание по шву)
+# стыки панелей — только касание по шву, объём пересечения ≈ 0, поэтому их НЕ исключаем
 
 
 def clashes(min_vol=0.5):
@@ -48,6 +48,22 @@ def clashes(min_vol=0.5):
         if v > min_vol:
             out.append((na, nb, round(v, 1)))
     return out
+
+
+def lift_test(steps=(1, 3, 6, 10, 20, 40, 80, 120)):
+    """Колпак (бока+крыша) поднимаем строго вверх: не должен цепляться за каркас и компоненты."""
+    from build123d import Pos
+    cover = shells["side_l"] + shells["side_r"] + shells["roof"]
+    others = {k: v for k, v in {**shells, **dummies}.items()
+              if k not in ("side_l", "side_r", "roof") and not KEEPOUT(k)}
+    bad = []
+    for dz in steps:
+        c = Pos(0, 0, dz) * cover
+        for n, o in others.items():
+            v = (c & o).volume
+            if v > 0.5:
+                bad.append((dz, n, round(v, 1)))
+    return bad
 
 
 def envelope_report():

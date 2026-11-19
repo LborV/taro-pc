@@ -13,8 +13,6 @@ from tools.render import render  # noqa: E402
 BEIGE, BEIGE2, DARK = "#e3d3b0", "#d8c59c", "#3b3d40"
 C = {"base": "#cdb98f", "front_band": BEIGE, "front_screen": "#e8d9b8", "rear": "#dccba6",
      "side_l": "#efe3c6", "side_r": "#efe3c6", "roof": "#f2e8cf",
-     "rail_l": "#a08860", "rail_r": "#a08860",
-     "roof_block_lf": "#a08860", "roof_block_lb": "#a08860", "roof_block_rf": "#a08860", "roof_block_rb": "#a08860",
      "screws": "#6d6f73", "inserts": "#c9a227", "feet": "#222222",
      "screen_bezel": DARK, "crowpanel": "#2f3b45",
      "scr_aa": "#cfe3f2",
@@ -46,11 +44,11 @@ LEG = [("экран CrowPanel 5\" (STEP)", C["crowpanel"]), ("принтер CSN
        ("клавиши MX", C["key_switches"]), ("XL4015", C["xl4015"]), ("PCF8574", C["pcf8574"]),
        ("камера динамика", C["spk_chamber_env"]), ("зоны: колодки / подстроечник", C["pr_clamp_l_keepout"]),
        ("зоны: кабели / разъёмы", C["scr_cable_keepout"]), ("откидывание крышки лотка", C["pr_lid_keepout"])]
-NOCOVER = {"side_l", "side_r", "roof", "roof_block_lf", "roof_block_lb", "roof_block_rf", "roof_block_rb"}
-EXPLODE = {"roof": (0, 0, 120), "roof_block_lf": (-50, 0, 95), "roof_block_lb": (-50, 0, 95),
-           "roof_block_rf": (50, 0, 95), "roof_block_rb": (50, 0, 95), "side_l": (-110, 0, 40), "side_r": (110, 0, 40),
-           "front_screen": (0, -90, 40), "screen_bezel": (0, -130, 60), "front_band": (0, -80, 0), "rear": (0, 90, 0),
-           "rail_l": (0, 0, 70), "rail_r": (0, 0, 70), "base": (0, 0, -50), "feet": (0, 0, -50)}
+COVER = ("side_l", "side_r", "roof")
+FRONT = ("front_band", "front_screen", "screen_bezel")
+NOCOVER = set(COVER)
+EXPLODE = {**{n: (0, 0, 130) for n in COVER}, **{n: (0, -90, 0) for n in FRONT},
+           "rear": (0, 90, 0), "base": (0, 0, 0), "feet": (0, 0, 0)}
 PARTS_ONLY = list(EXPLODE) + ["screws"]
 
 
@@ -64,13 +62,52 @@ def exploded():
     return out
 
 
+STEP_COL = "#e53935"
+
+
+def assembly_steps():
+    """4 картинки: что ставим на каждом шаге (красное — новое на этом шаге + его винты)."""
+    import fasteners as F
+    from build123d import Compound
+    from build123d import Pos as _P
+    D = "renders/assembly/"
+    groups = {
+        "base": ["base", "feet", "xl4015", "pcf8574", "spk_chamber_env", "speaker"],
+        "front": list(FRONT) + ["crowpanel", "scr_aa", "pr_frame", "pr_body", "key_plate", "key_switches", "key_caps"],
+        "rear": ["rear", "kcd1", "cable"],
+        "cover": list(COVER),
+    }
+    scr = {k: [] for k in groups}
+    for part, x, y in F.bottom_bosses():
+        g = {"front_band": "front", "rear": "rear"}.get(part, "cover")
+        scr[g].append(F.screw((x, y, -25), (0, 0, 1), 10.0))
+    titles = {"base": "1. Дно: ножки, XL4015 (термоклей), PCF8574, камера динамика",
+              "front": "2. Передняя панель в сборе (экран, клавиши, принтер) → на дно, 3 винта снизу",
+              "rear": "3. Задняя стенка (выключатель, кабель с хомутом) → на дно, 3 винта снизу",
+              "cover": "4. Колпак (бок+крыша+бок, склеен) — сверху вниз, 4 винта снизу"}
+    lift = {"front": (0, -70, 0), "rear": (0, 70, 0), "cover": (0, 0, 110)}
+    done = []
+    for i, g in enumerate(groups):
+        objs_ = [(n, shapes[n], C[n], 1.0) for n in done]
+        d = lift.get(g, (0, 0, 0))
+        for n in groups[g]:
+            col = STEP_COL if n in ("base", "rear", "front_band", "front_screen", "side_l", "side_r", "roof") else C[n]
+            objs_.append((n, _P(*d) * shapes[n], col, 1.0))
+        if scr[g]:
+            objs_.append(("scr", Compound(children=scr[g]), "#111111", 1.0))
+        view = "iso_rear" if g == "rear" else "iso_front"
+        render(objs_, view, D + f"{i + 1}_{g}.png", title=titles[g], size=(1300, 1000))
+        done += groups[g]
+
+
 if __name__ == "__main__" and "--panels" in sys.argv:
     D = "renders/layout/"
-    render(exploded(), "iso_front", D + "10_exploded.png", title="Разнесённая: каркас + колпак (бока, крыша)")
-    render(objs(keepouts=False), "bottom", D + "11_bottom_screws.png", title="Снизу: 10 винтов M3 потай + 4 ножки")
+    render(exploded(), "iso_front", D + "10_exploded.png", title="Разнесённая: дно, передняя панель, задняя стенка, колпак")
+    render(objs(keepouts=False), "bottom", D + "11_bottom_screws.png", title="Снизу: 10 винтов M3 потай (3+3+4) + 4 ножки")
     render(objs(exclude=NOCOVER | {"crowpanel", "scr_aa"}, keepouts=False), "iso_rear", D + "12_carcass_nocover.png",
-           title="Каркас без колпака: балки, бобышки, вставки")
+           title="Без колпака: Г-язычки сверху панелей входят в пазы под крышей")
     render(objs(keepouts=False), "iso_front", D + "1_iso_front.png", title="3/4 спереди")
+    assembly_steps()
     sys.exit(0)
 
 if __name__ == "__main__":
