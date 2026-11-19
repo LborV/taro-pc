@@ -4,13 +4,13 @@
   "size": [
    203.0,
    158.5,
-   12.0
+   15.1
   ],
   "orient": "низом вниз, бортик вверх",
   "colour": "бежевый",
   "fits_bed": true,
   "qty": 1,
-  "volume_cm3": 137.0
+  "volume_cm3": 140.1
  },
  {
   "file": "taro_rear.stl",

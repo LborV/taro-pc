@@ -358,6 +358,26 @@ def split_guides(parts, b):
     return parts
 
 
+def printer_cradle():
+    """Опора принтера на дне: 2 продольных ребра + поперечина, верх — по наклонному низу корпуса принтера."""
+    loc = Location(band_plane())
+    bw, bh = P.PR_BODY
+    ch = P.PR_CUT[1]
+    u_bot = P.PR_CUT_U0 + (ch - bh) / 2 - P.PR_CRADLE_GAP      # низ корпуса принтера минус зазор
+    d0, d1 = P.PR_CRADLE_DEPTH
+    t = P.PR_CRADLE_RIB
+    blocks = None
+    for dx in P.PR_CRADLE_X:
+        x = P.PR_X + dx
+        r = Pos(x, u_bot - 40, -(d0 + d1) / 2) * Box(t, 80, d1 - d0)
+        blocks = r if blocks is None else blocks + r
+    xa, xb = P.PR_X + P.PR_CRADLE_X[0], P.PR_X + P.PR_CRADLE_X[1]
+    blocks += Pos((xa + xb) / 2, u_bot - 40, -d1 + t / 2) * Box(xb - xa, 80, t)
+    big = 2 * P.W
+    w = loc * blocks
+    return w & box_xyz(-big, big, -big, big, P.BASE_T - 0.01, big)
+
+
 def groups():
     """Имена печатных деталей переднего узла и колпака (целиком или из частей)."""
     if P.print_whole():
@@ -370,7 +390,7 @@ def build(with_fasteners=True):
     sh, inner = shell(b)
     sh = sh - _screen_cuts() - _band_cuts() - _grille_cuts() - _rear_cuts()
     parts = split(sh)
-    parts["base"] = parts["base"] + base_extras(b)
+    parts["base"] = parts["base"] + base_extras(b) + printer_cradle()
     parts["rear"] = parts["rear"] + rear_bushing()
     parts["screen_bezel"] = screen_bezel()
     bk, sk = bezel_backing_and_sockets()
