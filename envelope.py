@@ -390,19 +390,34 @@ def _seat(cx, cy, iw, ih):
 
 
 def base_seats():
-    """Посадочные места на дне: XL4015 (на клей) и PCF8574 (2 стойки под саморезы M2.5)."""
-    xl = _seat(*P.XL_POS, *P.XL_PAD)
-    pcf = _seat(*P.PCF_POS, *P.PCF_PAD)
-    x0 = P.PCF_POS[0] - P.PCF_BOARD[0] / 2
-    y0 = P.PCF_POS[1] - P.PCF_BOARD[1] / 2
-    holes = None
-    for hx, hy in P.PCF_HOLES:
-        st = Pos(x0 + hx, y0 + hy, P.BASE_T + P.PCF_STANDOFF_H / 2 - 0.01) * Cylinder(P.PCF_STANDOFF_D / 2,
-                                                                                   P.PCF_STANDOFF_H + 0.02)
-        hl = Pos(x0 + hx, y0 + hy, P.BASE_T + P.PCF_STANDOFF_H - 3.0) * Cylinder(1.1, 6.02)
-        pcf = pcf + st
-        holes = hl if holes is None else holes + hl
-    return xl + pcf - holes
+    """Посадочные места на дне.
+    XL4015 (+12 %): бортики только вдоль длинных сторон — короткие стороны с клеммами полностью открыты.
+    PCF8574 (+12 %): карман с бортиком, плата на 2 полочках у коротких сторон (под ней пайки гребёнок),
+    разрывы бортика у коротких сторон — разъёмы STEMMA QT. Без винтов: капля термоклея."""
+    t, h = P.SEAT_WALL
+    z0 = P.BASE_T - 0.01
+    # --- XL4015
+    cx, cy = P.XL_POS
+    iw, ih = (P.XL_PAD[1], P.XL_PAD[0]) if P.XL_ALONG_Y else P.XL_PAD
+    xl = None
+    for sx in (-1, 1):
+        x_in = cx + sx * iw / 2
+        wall = box_xyz(min(x_in, x_in + sx * t), max(x_in, x_in + sx * t), cy - ih / 2 - t, cy + ih / 2 + t, z0, P.BASE_T + h)
+        xl = wall if xl is None else xl + wall
+    # --- PCF8574
+    px, py = P.PCF_POS
+    iw, ih = P.PCF_PAD
+    hp = P.PCF_LEDGE_H + P.PCF_BOARD[2] + 1.0
+    pcf = box_xyz(px - iw / 2 - t, px + iw / 2 + t, py - ih / 2 - t, py + ih / 2 + t, z0, P.BASE_T + hp)
+    pcf -= box_xyz(px - iw / 2, px + iw / 2, py - ih / 2, py + ih / 2, z0 - 1, P.BASE_T + hp + 1)
+    g = P.SEAT_GAP
+    pcf -= box_xyz(px - iw / 2 - t - 1, px + iw / 2 + t + 1, py - g / 2, py + g / 2, P.BASE_T + P.PCF_LEDGE_H, P.BASE_T + hp + 1)
+    for sx in (-1, 1):
+        x_in = px + sx * iw / 2
+        ledge = box_xyz(min(x_in, x_in - sx * P.PCF_LEDGE_W), max(x_in, x_in - sx * P.PCF_LEDGE_W),
+                        py - ih / 2, py + ih / 2, z0, P.BASE_T + P.PCF_LEDGE_H)
+        pcf = pcf + ledge
+    return xl + pcf
 
 
 def groups():

@@ -125,9 +125,16 @@ def internals():
     z0 = P.BASE_T
     x, y = P.XL_POS
     w, d = P.XL_BOARD
+    if P.XL_ALONG_Y:
+        w, d = d, w
+    pw, pd = (P.XL_PAD[1], P.XL_PAD[0]) if P.XL_ALONG_Y else P.XL_PAD
     out["xl4015"] = box_xyz(x - w / 2, x + w / 2, y - d / 2, y + d / 2, z0, z0 + P.XL_H)
-    xs = x + P.XL_PAD[0] / 2 + P.SEAT_WALL[0]          # свободная зона — за бортиком посадочного места
+    # подстроечник/паяльник — сбоку (+X, к центру корпуса), провода — у обеих клеммных колодок
+    xs = x + pw / 2 + P.SEAT_WALL[0]
     out["xl4015_side_keepout"] = box_xyz(xs, xs + P.XL_SIDE_FREE, y - d / 2, y + d / 2, z0, z0 + P.XL_H)
+    if P.XL_ALONG_Y:
+        out["xl4015_wire_keepout"] = (box_xyz(x - w / 2, x + w / 2, y - d / 2 - P.XL_WIRE_FREE, y - d / 2, z0, z0 + 12)
+                                      + box_xyz(x - w / 2, x + w / 2, y + d / 2, y + d / 2 + P.XL_WIRE_FREE, z0, z0 + 12))
     x, y = P.PCF_POS
     bw, bd, bt = P.PCF_BOARD
     zp = z0 + P.PCF_STANDOFF_H
