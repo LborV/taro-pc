@@ -95,13 +95,13 @@
   "size": [
    185.6,
    82.5,
-   18.0
+   26.6
   ],
   "orient": "верхом вниз",
   "colour": "бежевый",
   "fits_bed": true,
   "qty": 1,
-  "volume_cm3": 52.3
+  "volume_cm3": 63.2
  },
  {
   "file": "taro_key_plate.stl",

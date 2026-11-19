@@ -48,21 +48,51 @@ def body():
         b = fillet(edges, P.R_EDGE)   # низ без скругления: стоит на ножках, дно — плоская плита
     except Exception as e:  # noqa: BLE001
         print("fillet all edges failed:", e)
+    return b
+
+
+def handle_pocket(grow=0.0):
+    """Проём ручки с поднутрением под передней кромкой (сечение YZ, вытянуто по X).
+    grow > 0 — тот же контур, раздутый на grow (наружная поверхность стенок ручки)."""
+    from build123d import Kind
     hx, hy, hd = P.HANDLE
-    yc = (P.Y_TOP_FRONT + P.Y_TOP_REAR) / 2
-    pocket = Pos(0, yc, P.H - hd / 2 + 0.01) * Box(hx, hy, hd + 0.02)
-    pocket = fillet(pocket.edges().filter_by(Axis.Z), P.HANDLE_R)
+    u, r, c = P.HANDLE_UNDERCUT, P.HANDLE_RIM, P.HANDLE_CHAMFER
+    yf, yb = P.HANDLE_Y - hy / 2, P.HANDLE_Y + hy / 2
+    H = P.H
+    pts = [(yb, H + 6), (yb, H - hd + c), (yb - c, H - hd), (yf - u + c, H - hd), (yf - u, H - hd + c),
+           (yf - u, H - r), (yf, H - r), (yf, H + 6)]
+    face = Plane.YZ * Polygon(*pts, align=None)
+    if grow:
+        face = offset(face, amount=grow, kind=Kind.INTERSECTION)
+    face = Plane.YZ.offset(-hx / 2 - grow) * Polygon(*[(v.Y, v.Z) for v in face.vertices()], align=None) \
+        if False else Pos(-hx / 2 - grow, 0, 0) * face
+    pocket = extrude(face, amount=hx + 2 * grow, dir=(1, 0, 0))
     try:
-        pocket = fillet(pocket.edges().group_by(Axis.Z)[0], 3.0)
-    except Exception:  # noqa: BLE001
-        pass
-    return b - pocket
+        vert = [e for e in pocket.edges() if abs(e.tangent_at(0.5).Z) > 0.99 and e.length > 3]
+        pocket = fillet(vert, 4.0 + grow)
+    except Exception as e:  # noqa: BLE001
+        print("handle fillet skipped:", e)
+    return pocket
 
 
 def shell(b=None):
+    """Оболочка. Ручку вырезаем ПОСЛЕ offset(): поднутрение ломает offset() у OCC."""
     b = b or body()
     inner = offset(b, amount=-P.WALL)
-    return b - inner, inner
+    sh = b - inner
+    pocket = handle_pocket()
+    grown = handle_pocket(P.WALL)
+    walls = (grown & b) - pocket
+    sh = sh - pocket + walls
+    inner = inner - grown
+    try:   # скруглить кромку проёма — за неё тянут пальцами
+        hx, hy, _ = P.HANDLE
+        top = [e for e in sh.edges() if abs(e.center().Z - P.H) < 0.05 and abs(e.center().X) <= hx / 2 + 0.5
+               and P.HANDLE_Y - hy / 2 - 0.5 <= e.center().Y <= P.HANDLE_Y + hy / 2 + 0.5]
+        sh = fillet(top, 1.5)
+    except Exception as e:  # noqa: BLE001
+        print("handle rim fillet skipped:", e)
+    return sh, inner
 
 
 # ------------------------------------------------------------------ вырезы
@@ -179,8 +209,9 @@ def zones(extra=0.0):
         z0, z1 = P.H - 40, P.H + 10
         Z["roof_mitre"] = _prism_xz([(-xb(z0), z0), (xb(z0), z0), (xb(z1), z1), (-xb(z1), z1)], -big, big)
     hx, hy, hd = P.HANDLE
-    yc = (P.Y_TOP_FRONT + P.Y_TOP_REAR) / 2
-    handle = Pos(0, yc, P.H - (hd + P.WALL + 1) / 2) * Box(hx + 2 * P.WALL + 2, hy + 2 * P.WALL + 2, hd + P.WALL + 1)
+    yc = P.HANDLE_Y - P.HANDLE_UNDERCUT / 2
+    handle = Pos(0, yc, P.H - (hd + P.WALL + 1) / 2) * Box(hx + 2 * P.WALL + 2, hy + P.HANDLE_UNDERCUT + 2 * P.WALL + 2,
+                                                            hd + P.WALL + 1)
     if "roof" in Z:
         Z["roof"] = Z["roof"] + handle
     # бока владеют вертикальными скруглениями на углах → шов на переднем/заднем лице в 5.5 мм от угла

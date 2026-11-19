@@ -49,7 +49,7 @@ plan["rear"] = (L.shells["rear"], (), "стоя, как в сборке (вту�
 plan["screen_bezel"] = (L.shells["screen_bezel"], ((Axis.X, tilt_to_down(N_SCR)),), "лицом вниз", "тёмно-серый")
 if P.print_whole():
     plan["front"] = (L.shells["front"], (), "стоя, как в сборке; кайма 8 мм", "бежевый")
-    plan["cover"] = (L.shells["cover"], ((Axis.X, 180),), "крышей вниз; под ручкой мост 30 мм или поддержка", "бежевый")
+    plan["cover"] = (L.shells["cover"], ((Axis.X, 180),), "крышей вниз; под ручкой мост ≈ 25 мм (фаски 45°), поддержки не нужны", "бежевый")
 else:
     plan["front_band"] = (L.shells["front_band"], ((Axis.X, tilt_to_down((-math.cos(P.BAND_TILT), math.sin(P.BAND_TILT)))),),
                           "лицом вниз", "бежевый")
