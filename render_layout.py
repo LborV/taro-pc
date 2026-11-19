@@ -41,18 +41,19 @@ LEG = [("экран CrowPanel 5\" (STEP)", C["crowpanel"]), ("принтер CSN
        ("клавиши MX", C["key_switches"]), ("XL4015", C["xl4015"]), ("PCF8574", C["pcf8574"]),
        ("камера динамика", C["spk_chamber_env"]), ("зоны: колодки / подстроечник", C["pr_clamp_l_keepout"]),
        ("зоны: кабели / разъёмы", C["scr_cable_keepout"]), ("откидывание крышки лотка", C["pr_lid_keepout"])]
-D = "renders/layout/"
-NOCOVER = {"cover"}
-render(objs(keepouts=False), "iso_front", D + "1_iso_front.png", title="3/4 спереди")
-render(objs(keepouts=False), "iso_front_r", D + "2_iso_front_right.png", title="3/4 спереди справа (решётка)")
-render(objs(keepouts=False), "front", D + "3_front.png", title="Спереди")
-render(objs(keepouts=False), "right", D + "4_right.png", title="Справа")
-render(objs(keepouts=False), "rear", D + "5_rear.png", title="Сзади")
-render(objs(exclude=NOCOVER), "right", D + "6_section_x+34_printer.png", clip_spec=("x", 34.0, True),
-       title="Разрез X=+34 (принтер, экран), без колпака", legend=LEG)
-render(objs(exclude=NOCOVER), "right", D + "7_section_x-62_keys.png", clip_spec=("x", -62.5, True),
-       title="Разрез X=−62 (клавиши, PCF8574, XL4015)", legend=LEG)
-render(objs(exclude=NOCOVER | {"pr_lid_keepout"}), "top", D + "8_top_nocover.png", title="Сверху без колпака",
-       legend=LEG)
-render(objs(exclude=NOCOVER | {"pr_lid_keepout"}), "iso_rear", D + "9_iso_rear_nocover.png",
-       title="3/4 сзади без колпака", legend=LEG)
+if __name__ == "__main__":
+    D = "renders/layout/"
+    NOCOVER = {"cover"}
+    render(objs(keepouts=False), "iso_front", D + "1_iso_front.png", title="3/4 спереди")
+    render(objs(keepouts=False), "iso_front_r", D + "2_iso_front_right.png", title="3/4 спереди справа (решётка)")
+    render(objs(keepouts=False), "front", D + "3_front.png", title="Спереди")
+    render(objs(keepouts=False), "right", D + "4_right.png", title="Справа")
+    render(objs(keepouts=False), "rear", D + "5_rear.png", title="Сзади")
+    render(objs(exclude=NOCOVER), "right", D + "6_section_x+34_printer.png", clip_spec=("x", 34.0, True),
+           title="Разрез X=+34 (принтер, экран), без колпака", legend=LEG)
+    render(objs(exclude=NOCOVER), "right", D + "7_section_x-62_keys.png", clip_spec=("x", -62.5, True),
+           title="Разрез X=−62 (клавиши, PCF8574, XL4015)", legend=LEG)
+    render(objs(exclude=NOCOVER | {"pr_lid_keepout"}), "top", D + "8_top_nocover.png", title="Сверху без колпака",
+           legend=LEG)
+    render(objs(exclude=NOCOVER | {"pr_lid_keepout"}), "iso_rear", D + "9_iso_rear_nocover.png",
+           title="3/4 сзади без колпака", legend=LEG)
