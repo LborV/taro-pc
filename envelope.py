@@ -268,6 +268,20 @@ def build(with_fasteners=True):
     if with_fasteners:
         import fasteners
         parts, hw = fasteners.apply(parts, inner, b)
+        from build123d import Compound
+
+        from parts import key_plate as KP
+        from parts import speaker_box as SB
+        kb, kh = KP.panel_bosses()
+        parts["front_band"] = parts["front_band"] + kb - kh
+        parts["key_plate"] = KP.key_plate()
+        sb, sh_ = SB.base_bosses()
+        parts["base"] = parts["base"] + sb - sh_
+        parts["speaker_box"] = SB.speaker_box()
+        ks, ki = KP.hardware()
+        ss, si = SB.hardware()
+        hw["screws"] = Compound(children=list(hw["screws"]) + list(ks) + list(ss))
+        hw["inserts"] = Compound(children=list(hw["inserts"]) + list(ki) + list(si))
     if P.print_whole():
         parts["front"] = parts.pop("front_band") + parts.pop("front_screen")
         parts["cover"] = parts.pop("side_l") + parts.pop("side_r") + parts.pop("roof")

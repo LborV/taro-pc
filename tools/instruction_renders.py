@@ -64,7 +64,7 @@ FRONT = (["front"] if WHOLE else ["front_band", "front_screen"]) + ["screen_beze
 SCREEN = ["crowpanel", "scr_aa"]
 PRINTER = ["pr_frame", "pr_body"]
 KEYS = ["key_plate", "key_switches", "key_caps"]
-INNER = ["xl4015", "pcf8574", "spk_chamber_env", "spk_stand", "speaker"]
+INNER = ["xl4015", "pcf8574", "speaker_box", "speaker"]
 REAR_HW = ["kcd1", "cable"]
 
 bosses = F.bottom_bosses()
@@ -204,7 +204,7 @@ R("80_base_feet", [o("base", "#d8c8a4"), o("feet")], "bottom", size=(1300, 1000)
   title="Дно снизу: 4 резиновые ножки")
 R("81_base_inner", [o("base", "#d8c8a4")] + [o(n) for n in INNER], "iso_front", size=(1300, 1000),
   labels=[("XL4015", shapes["xl4015"].center()), ("PCF8574", shapes["pcf8574"].center()),
-          ("динамик", shapes["spk_chamber_env"].center())],
+          ("динамик", shapes["speaker_box"].center())],
   title="Дно сверху: понижайка, PCF8574, камера динамика")
 
 # ============================================================ 10. передняя панель → дно

@@ -103,8 +103,8 @@ def keys():
     t = P.PANEL_T
     pw = (P.KEY_N - 1) * P.KEY_PITCH + 14 + 2 * 3
     L = {}
-    p0, p1 = -t - P.KEY_PLATE_T, -t           # пластина прижата к тылу панели
-    L["key_plate"] = box_local(P.KEY_X - pw / 2, P.KEY_X + pw / 2, u - 14, u + 14, p0, p1)
+    p1 = -P.WALL - P.FIT                      # пластина прижата к тылу панели
+    p0 = p1 - P.KEY_PLATE_T
     sw, caps = [], []
     cw, ch, cz = P.KEY_CAP
     for x in key_centers():
@@ -132,20 +132,9 @@ def internals():
     bw, bd, bt = P.PCF_BOARD
     zp = z0 + P.PCF_STANDOFF_H
     out["pcf8574"] = box_xyz(x - bw / 2, x + bw / 2, y - bd / 2, y + bd / 2, zp, zp + bt + 8.5)
-    # динамик: лицом к решётке на правом боку; камера параллельна завалу боковины
-    yc, zc = P.GRILLE_C[0] * P.D, P.GRILLE_C[1]
-    cin = P.SPK_CHAMBER_IN
-    xo = P.half_w(zc) - P.COVER_T - P.FIT - P.SPK_FOAM       # наружная грань камеры
-    rot = Location((xo, yc, zc)) * Rot(0, -P.SIDE_LEAN_DEG, 0)
-    cw = cin[0] + 2 * P.WALL
-    out["spk_chamber_env"] = rot * box_xyz(-cw, 0, -cin[1] / 2 - P.WALL, cin[1] / 2 + P.WALL,
-                                           -cin[2] / 2 - P.WALL, cin[2] / 2 + P.WALL)
-    # подставка камеры до дна (печатается заодно с камерой)
-    zb = zc - cin[2] / 2 - P.WALL
-    out["spk_stand"] = box_xyz(xo - cw + 2, xo - 2, yc - cin[1] / 2, yc + cin[1] / 2, P.BASE_T + P.BASE_RIM_H + 0.5, zb - 2.0) if zb - 2.0 > P.BASE_T + P.BASE_RIM_H + 1.5 else None
-    if out["spk_stand"] is None:
-        del out["spk_stand"]
-    out["speaker"] = rot * Pos(-P.WALL - P.SPK_DEPTH / 2, 0, 0) * Rot(0, 90, 0) * Cylinder(P.SPK_D / 2, P.SPK_DEPTH)
+    # динамик (камера — настоящая деталь parts/speaker_box.py)
+    from parts.speaker_box import speaker_dummy
+    out["speaker"] = speaker_dummy()
     # задняя стенка
     sx, sz = P.SW_POS
     out["kcd1"] = Location(rear_plane(sx, sz)) * box_xyz(-P.SW_CUT[0] / 2, P.SW_CUT[0] / 2,

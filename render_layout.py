@@ -21,7 +21,7 @@ C = {"base": "#cdb98f", "front_band": BEIGE, "front_screen": "#e8d9b8", "front":
      "pr_clamp_l_keepout": "#ffa726", "pr_clamp_r_keepout": "#ffa726", "pr_lid_keepout": "#4fc3f7",
      "key_plate": "#9e9e9e", "key_switches": "#c62828", "key_caps": DARK, "key_wire_keepout": "#ff8a80",
      "xl4015": "#1565c0", "xl4015_side_keepout": "#ffa726", "pcf8574": "#5c6bc0",
-     "spk_chamber_env": "#a1887f", "spk_stand": "#a1887f", "speaker": "#212121", "kcd1": "#1a1a1a", "cable": "#111111"}
+     "speaker_box": "#a1887f", "speaker": "#212121", "kcd1": "#1a1a1a", "cable": "#111111"}
 shapes = {**L.shells, **L.dummies, **L.hardware}
 shapes["crowpanel"] = screen_step()
 shapes["scr_aa"] = Location(screen_plane()) * Pos(0, 0, 0.05) * Box(P.SCR_AA[0], P.SCR_AA[1], 0.1)
@@ -42,7 +42,7 @@ def objs(exclude=(), keepouts=True, ko_op=0.3):
 
 LEG = [("экран CrowPanel 5\" (STEP)", C["crowpanel"]), ("принтер CSN-A2", C["pr_body"]),
        ("клавиши MX", C["key_switches"]), ("XL4015", C["xl4015"]), ("PCF8574", C["pcf8574"]),
-       ("камера динамика", C["spk_chamber_env"]), ("зоны: колодки / подстроечник", C["pr_clamp_l_keepout"]),
+       ("камера динамика", C["speaker_box"]), ("зоны: колодки / подстроечник", C["pr_clamp_l_keepout"]),
        ("зоны: кабели / разъёмы", C["scr_cable_keepout"]), ("откидывание крышки лотка", C["pr_lid_keepout"])]
 import envelope as _env  # noqa: E402
 FRONT_P, COVER_P = _env.groups()
@@ -76,7 +76,7 @@ def assembly_steps():
     from build123d import Pos as _P
     D = "renders/assembly/"
     groups = {
-        "base": ["base", "feet", "xl4015", "pcf8574", "spk_chamber_env", "speaker"],
+        "base": ["base", "feet", "xl4015", "pcf8574", "speaker_box", "speaker"],
         "front": list(FRONT) + ["crowpanel", "scr_aa", "pr_frame", "pr_body", "key_plate", "key_switches", "key_caps"],
         "rear": ["rear", "kcd1", "cable"],
         "cover": list(COVER),

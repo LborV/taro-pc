@@ -17,7 +17,7 @@ dummies = all_dummies()
 FRONT_P, COVER_P = envelope.groups()
 PANELS = {"base", "rear", *FRONT_P, *COVER_P}
 EXPECTED = {
-    ("spk_chamber_env", "speaker"), ("pr_body", "pr_rear_keepout"),
+    ("speaker_box", "speaker"), ("pr_body", "pr_rear_keepout"),
     ("key_plate", "key_switches"), ("key_switches", "key_caps"),
     ("scr_pcb", "scr_glass"), ("scr_pcb", "scr_back_keepout"),
     ("pr_body", "pr_lid_keepout"), ("pr_frame", "pr_lid_keepout"),
