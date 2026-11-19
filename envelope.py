@@ -44,7 +44,8 @@ def body_raw():
 def body():
     b = body_raw()
     try:
-        b = fillet(b.edges(), P.R_EDGE)
+        edges = [e for e in b.edges() if not (abs(e.vertices()[0].Z) < 1e-3 and abs(e.vertices()[-1].Z) < 1e-3)]
+        b = fillet(edges, P.R_EDGE)   # низ без скругления: стоит на ножках, дно — плоская плита
     except Exception as e:  # noqa: BLE001
         print("fillet all edges failed:", e)
     hx, hy, hd = P.HANDLE
@@ -70,20 +71,23 @@ def _z_face():
 
 
 def _screen_cuts():
+    """Неглубокий карман под тёмную вставку-рамку + окно по активной области с фаской."""
     loc = Location(screen_plane())
     gw, gh = P.SCR_GLASS
     bw, bh = gw + 2 * P.SCR_BEZEL_W, gh + 2 * P.SCR_BEZEL_W
-    pocket = loc * Pos(0, P.SCR_GLASS_CY, _z_face() + 5 - P.SCR_RECESS) * Box(bw, bh, 10)
-    through = loc * Pos(0, P.SCR_GLASS_CY, 0) * Box(gw + 2 * P.SCR_BEZEL_GAP, gh + 2 * P.SCR_BEZEL_GAP, 40)
-    return pocket + through
+    zf = _z_face()
+    pocket = loc * Pos(0, P.SCR_GLASS_CY, zf) * Box(bw, bh, 2 * P.SCR_BEZEL_T)
+    aw, ah = P.SCR_AA
+    window = loc * Pos(0, 0, zf) * Box(aw + 2.0, ah + 2.0, 40)
+    return pocket + window
 
 
 def screen_bezel():
-    """Тёмно-серая рамка-вставка: заподлицо с панелью, окно по АО с фаской."""
+    """Тёмно-серая вставка-рамка в кармане лицевой панели (заподлицо), окно по АО с фаской."""
     loc = Location(screen_plane())
     gw, gh = P.SCR_GLASS
     bw, bh = gw + 2 * P.SCR_BEZEL_W - 2 * P.FIT, gh + 2 * P.SCR_BEZEL_W - 2 * P.FIT
-    t = P.SCR_RECESS
+    t = P.SCR_BEZEL_T
     frame = Pos(0, P.SCR_GLASS_CY, _z_face() - t / 2) * Box(bw, bh, t)
     frame = fillet(frame.edges().filter_by(Axis.Z), 2.0)
     aw, ah = P.SCR_AA
@@ -91,7 +95,7 @@ def screen_bezel():
     try:
         top = frame.edges().group_by(Axis.Z)[-1]
         inner_edges = [e for e in top if abs(e.center().X) < aw / 2 + 2 and abs(e.center().Y) < ah / 2 + 2]
-        frame = chamfer(inner_edges, 1.6)
+        frame = chamfer(inner_edges, 0.8)
     except Exception as e:  # noqa: BLE001
         print("bezel chamfer skipped:", e)
     return loc * frame
@@ -155,31 +159,73 @@ def rear_bushing():
     return Location(rear_plane(cx, cz)) * Pos(0, 0, -P.REAR_FIELD[2] + 1.5) * ring
 
 
-# ------------------------------------------------------------------ деление на детали (черновое)
-def split(sh):
-    """Скорлупа → шасси (дно + задняя стенка), лицевая панель, колпак (бока + крыша)."""
-    s = P.WALL + 0.05
-    front_zone = [(-5, -5), (s / cos(P.BAND_TILT), -5),
-                  (P.Y_TILT + s / cos(P.BAND_TILT), P.BAND_H),
-                  (P.Y_TOP_FRONT + s / cos(P.TILT), P.H + 5), (-5, P.H + 5)]
-    sr = s / cos(P.REAR_LEAN)
-    rear_zone = [(P.D - sr, -5), (P.D + 5, -5), (P.D + 5, P.H + 5), (P.Y_TOP_REAR - sr, P.H + 5)]
+# ------------------------------------------------------------------ деление на плоские панели
+PARTS = ["base", "front_band", "front_screen", "rear", "side_l", "side_r", "roof"]
+
+
+def zones():
+    """Зоны-призмы для деления скорлупы. Приоритет: крыша > бока > перед > зад > дно."""
     big = 2 * P.W
-    fz = _prism_yz(front_zone, -big, big)
-    rz = _prism_yz(rear_zone, -big, big) & box_xyz(-big, big, -big, big, -5, P.H - P.WALL - 0.05)
-    bottom = box_xyz(-big, big, -big, big, -5, P.WALL + 0.05)
-    panel = sh & fz
-    rest = sh - fz
-    chassis = (rest & bottom) + (rest & rz)
-    cover = rest - bottom - rz
-    return {"panel": panel, "chassis": chassis, "cover": cover}
+    r = P.R_EDGE + 0.5
+    s = P.WALL + 0.6
+    Z = {}
+    Z["roof"] = box_xyz(-big, big, -big, big, P.H - r, P.H + 10)
+    hx, hy, hd = P.HANDLE
+    yc = (P.Y_TOP_FRONT + P.Y_TOP_REAR) / 2
+    Z["roof"] = Z["roof"] + Pos(0, yc, P.H - (hd + P.WALL + 1) / 2) * Box(hx + 2 * P.WALL + 2, hy + 2 * P.WALL + 2,
+                                                                       hd + P.WALL + 1)
+    # бока владеют вертикальными скруглениями на углах → шов на переднем/заднем лице в 5.5 мм от угла
+    hw0, hw1 = P.half_w(-10) - r, P.half_w(P.H + 10) - r
+    Z["side_r"] = _prism_xz([(hw0, -10), (big, -10), (big, P.H + 10), (hw1, P.H + 10)], -big, big)
+    Z["side_l"] = _prism_xz([(-big, -10), (-hw0, -10), (-hw1, P.H + 10), (-big, P.H + 10)], -big, big)
+    front = [(-50, -10), (s / cos(P.BAND_TILT) + (-10) * math.tan(P.BAND_TILT), -10),
+             (P.Y_TILT + s / cos(P.BAND_TILT), P.BAND_H),
+             (P.Y_TOP_FRONT + s / cos(P.TILT) + 10 * math.tan(P.TILT), P.H + 10), (-50, P.H + 10)]
+    Z["front"] = _prism_yz(front, -big, big)
+    # шов между поясом и экранной гранью — по биссектрисе угла перегиба
+    dy = cos(P.BAND_TILT) + cos(P.TILT)
+    dz = -(sin(P.BAND_TILT) + sin(P.TILT))
+    L = math.hypot(dy, dz)
+    by, bz = P.Y_TILT, P.BAND_H
+    p1 = (by + 300 * dy / L, bz + 300 * dz / L)
+    Z["band"] = _prism_yz([(by, bz), p1, (p1[0], -50), (-50, -50), (-50, bz)], -big, big)
+    sr = s / cos(P.REAR_LEAN)
+    Z["rear"] = _prism_yz([(P.y_rear(-10) - sr, -10), (P.D + 50, -10), (P.D + 50, P.H + 10),
+                           (P.y_rear(P.H + 10) - sr, P.H + 10)], -big, big)
+    return Z
 
 
-def build():
+def split(sh):
+    Z = zones()
+    out = {}
+    rest = sh
+    out["roof"] = rest & Z["roof"]
+    rest = rest - Z["roof"]
+    for k in ("side_l", "side_r"):
+        out[k] = rest & Z[k]
+        rest = rest - Z[k]
+    front = rest & Z["front"]
+    out["front_band"] = front & Z["band"]
+    out["front_screen"] = front - Z["band"]
+    rest = rest - Z["front"]
+    out["rear"] = rest & Z["rear"]
+    out["base"] = rest - Z["rear"]
+    return out
+
+
+def build(with_fasteners=True):
     b = body()
-    sh, _inner = shell(b)
+    sh, inner = shell(b)
     sh = sh - _screen_cuts() - _band_cuts() - _grille_cuts() - _rear_cuts()
     parts = split(sh)
-    parts["chassis"] = parts["chassis"] + rear_bushing()
+    parts["rear"] = parts["rear"] + rear_bushing()
     parts["screen_bezel"] = screen_bezel()
+    hw = {}
+    if with_fasteners:
+        import fasteners
+        parts, hw = fasteners.apply(parts, inner, b)
+    build.hardware = hw
     return parts
+
+
+build.hardware = {}

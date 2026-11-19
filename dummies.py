@@ -101,7 +101,7 @@ def keys():
     loc = Location(band_plane())
     u = P.KEY_U
     t = P.PANEL_T
-    pw = (P.KEY_N - 1) * P.KEY_PITCH + 14 + 2 * 4
+    pw = (P.KEY_N - 1) * P.KEY_PITCH + 14 + 2 * 3
     L = {}
     p0, p1 = -t - P.KEY_PLATE_T, -t           # пластина прижата к тылу панели
     L["key_plate"] = box_local(P.KEY_X - pw / 2, P.KEY_X + pw / 2, u - 14, u + 14, p0, p1)

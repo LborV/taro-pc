@@ -10,23 +10,22 @@ from dummies import KEEPOUT, all_dummies
 import envelope
 
 shells = envelope.build()
+hardware = envelope.build.hardware
 dummies = all_dummies()
 
 # Пары, которые по смыслу соприкасаются/проходят насквозь — не ошибка.
+PANELS = {"base", "front_band", "front_screen", "rear", "side_l", "side_r", "roof"}
 EXPECTED = {
-    ("panel", "pr_body"), ("panel", "pr_frame"),            # принтер вставлен в вырез (вырез ещё не прорезан)
-    ("panel", "key_switches"), ("panel", "key_caps"),       # окна под клавиши ещё не прорезаны
-    ("panel", "scr_glass"),                                  # окно экрана ещё не прорезано
-    ("chassis", "kcd1"), ("chassis", "cable"),               # проходят сквозь заднюю стенку
     ("spk_chamber_env", "speaker"), ("pr_body", "pr_rear_keepout"),
     ("key_plate", "key_switches"), ("key_switches", "key_caps"),
     ("scr_pcb", "scr_glass"), ("scr_pcb", "scr_back_keepout"),
     ("pr_body", "pr_lid_keepout"), ("pr_frame", "pr_lid_keepout"),
-    ("panel", "cover"),                                      # стык колпак↔панель: в деталях будет паз
-    ("screen_bezel", "panel"), ("screen_bezel", "scr_glass"),
-    ("chassis", "cover"), ("chassis", "panel"),
-    ("cover", "scr_usb_keepout"),   # НАХОДКА: штекер USB-C не влезает при надетом колпаке — см. отчёт
+    ("front_band", "pr_frame"),                  # рамка принтера лежит на лице пояса
+    ("rear", "kcd1"), ("rear", "cable"),         # проходят сквозь заднюю стенку
+    ("screen_bezel", "front_screen"),
+    ("side_l", "scr_usb_keepout"),               # НАХОДКА: штекер USB-C не влезает при надетом колпаке — см. отчёт
 }
+EXPECTED |= {(a, b) for a in PANELS for b in PANELS}   # стыки панелей (касание по шву)
 
 
 def clashes(min_vol=0.5):

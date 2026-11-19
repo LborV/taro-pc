@@ -56,11 +56,21 @@ def build_objects():
     from dummies import screen_plane, screen_step
     from render_layout import C
 
-    groups = {  # name -> (group label, default visible, opacity)
-        "cover": ("Колпак", True, 1.0), "panel": ("Лицевая панель", True, 1.0),
-        "chassis": ("Шасси", True, 1.0), "screen_bezel": ("Рамка экрана", True, 1.0),
-    }
-    shapes = {**L.shells, **L.dummies}
+    CARCASS = {"base", "front_band", "front_screen", "rear", "rail_l", "rail_r"}
+    COVER = {"side_l", "side_r", "roof", "roof_block_lf", "roof_block_lb", "roof_block_rf", "roof_block_rb"}
+    HW = {"screws", "inserts", "feet"}
+
+    def group_of(name):
+        if name in COVER:
+            return "Колпак (снимается)", True, 1.0
+        if name in CARCASS or name == "screen_bezel":
+            return "Каркас", True, 1.0
+        if name in HW:
+            return "Крепёж", True, 1.0
+        if name.endswith("keepout"):
+            return "Зоны (keepout)", False, 0.3
+        return "Компоненты", True, 1.0
+    shapes = {**L.shells, **L.dummies, **L.hardware}
     shapes["crowpanel"] = screen_step()
     shapes["scr_aa"] = Location(screen_plane()) * Pos(0, 0, 0.05) * Box(P.SCR_AA[0], P.SCR_AA[1], 0.1)
     out = []
@@ -68,7 +78,7 @@ def build_objects():
         if name not in shapes:
             continue
         ko = name.endswith("keepout")
-        label, vis, op = groups.get(name, ("Зоны (keepout)" if ko else "Компоненты", not ko, 0.3 if ko else 1.0))
+        label, vis, op = group_of(name)
         tol = 0.4 if name == "crowpanel" else 0.15
         v, i, n = mesh(shapes[name], tol)
         out.append({"name": name, "group": label, "color": col, "opacity": op, "visible": vis, "v": v, "i": i})
@@ -102,7 +112,9 @@ const dl2 = new THREE.DirectionalLight(0xffffff, 0.5); dl2.position.set(300,400,
 const grid = new THREE.GridHelper(400, 20, 0xbbb2a0, 0xd8d0c0); grid.rotation.x = Math.PI/2; grid.position.set(0,80,-0.5); scene.add(grid);
 const clipPlane = new THREE.Plane(new THREE.Vector3(-1,0,0), 110);
 const b64 = (s, T) => { const bin = atob(s); const u = new Uint8Array(bin.length); for (let k=0;k<bin.length;k++) u[k]=bin.charCodeAt(k); return new T(u.buffer); };
-const EXPLODE = {cover:[0,0,90], panel:[0,-70,0], screen_bezel:[0,-110,25], chassis:[0,0,0]};
+const EXPLODE = {roof:[0,0,120], roof_block_lf:[-50,0,95], roof_block_lb:[-50,0,95], roof_block_rf:[50,0,95], roof_block_rb:[50,0,95],
+  side_l:[-110,0,40], side_r:[110,0,40], front_screen:[0,-90,40], screen_bezel:[0,-130,60], front_band:[0,-80,0],
+  rear:[0,90,0], rail_l:[0,0,70], rail_r:[0,0,70], base:[0,0,-50], feet:[0,0,-50]};
 const objs = {}; const groups = {};
 for (const o of DATA) {
   const g = new THREE.BufferGeometry();
