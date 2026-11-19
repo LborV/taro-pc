@@ -140,6 +140,11 @@ def internals():
     cw = cin[0] + 2 * P.WALL
     out["spk_chamber_env"] = rot * box_xyz(-cw, 0, -cin[1] / 2 - P.WALL, cin[1] / 2 + P.WALL,
                                            -cin[2] / 2 - P.WALL, cin[2] / 2 + P.WALL)
+    # подставка камеры до дна (печатается заодно с камерой)
+    zb = zc - cin[2] / 2 - P.WALL
+    out["spk_stand"] = box_xyz(xo - cw + 2, xo - 2, yc - cin[1] / 2, yc + cin[1] / 2, P.WALL, zb - 2.0) if zb - 2.0 > P.WALL + 1 else None
+    if out["spk_stand"] is None:
+        del out["spk_stand"]
     out["speaker"] = rot * Pos(-P.WALL - P.SPK_DEPTH / 2, 0, 0) * Rot(0, 90, 0) * Cylinder(P.SPK_D / 2, P.SPK_DEPTH)
     # задняя стенка
     sx, sz = P.SW_POS

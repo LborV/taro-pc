@@ -102,7 +102,8 @@ VIEWS = {
 }
 
 
-def render(objs, view, out, size=(1400, 1050), clip_spec=None, title="", ortho=None, edges=True, legend=None):
+def render(objs, view, out, size=(1400, 1050), clip_spec=None, title="", ortho=None, edges=True, legend=None,
+           labels=None, zoom=1.0, cam_dir=None):
     """objs: list of (name, shape, hex color, opacity)."""
     ren = vtk.vtkRenderer()
     ren.SetBackground(1, 1, 1)
@@ -139,7 +140,7 @@ def render(objs, view, out, size=(1400, 1050), clip_spec=None, title="", ortho=N
             ea.GetProperty().SetColor(0.15, 0.15, 0.15)
             ea.GetProperty().SetLineWidth(1.2)
             ren.AddActor(ea)
-    d, up = VIEWS[view]
+    d, up = VIEWS[view] if cam_dir is None else cam_dir
     cam = ren.GetActiveCamera()
     ren.ResetCamera()
     fp = cam.GetFocalPoint()
@@ -153,9 +154,9 @@ def render(objs, view, out, size=(1400, 1050), clip_spec=None, title="", ortho=N
     cam.SetParallelProjection(ortho)
     ren.ResetCamera()
     if ortho:
-        cam.SetParallelScale(cam.GetParallelScale() * 0.9)
+        cam.SetParallelScale(cam.GetParallelScale() * 0.9 / zoom)
     else:
-        cam.Zoom(0.95)
+        cam.Zoom(0.95 * zoom)
     light = vtk.vtkLight()
     light.SetLightTypeToCameraLight()
     light.SetPosition(0.4, 0.6, 1)
@@ -194,4 +195,40 @@ def render(objs, view, out, size=(1400, 1050), clip_spec=None, title="", ortho=N
     wr.SetFileName(out)
     wr.SetInputConnection(w2i.GetOutputPort())
     wr.Write()
+    if labels:
+        _draw_labels(ren, out, labels, size)
     print("render ->", os.path.relpath(out, ROOT))
+
+
+def _draw_labels(ren, out, labels, size):
+    """labels: [(text, (x, y, z)), ...] или (text, xyz, (dx, dy)) — выноски с линиями (PIL)."""
+    from PIL import Image, ImageDraw, ImageFont
+    img = Image.open(out).convert("RGB")
+    dr = ImageDraw.Draw(img)
+    f = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 26)
+    W, H = size
+    for lab in labels:
+        text, p = lab[0], lab[1]
+        c = vtk.vtkCoordinate()
+        c.SetCoordinateSystemToWorld()
+        c.SetValue(*p)
+        x, y = c.GetComputedDisplayValue(ren)
+        y = H - y
+        if len(lab) > 2 and lab[2] is not None:
+            dx, dy = lab[2]
+        else:
+            vx, vy = x - W / 2, y - H / 2
+            n = max((vx * vx + vy * vy) ** 0.5, 1)
+            dx, dy = 90 * vx / n, 90 * vy / n
+        bx, by = x + dx, y + dy
+        dr.line([(x, y), (bx, by)], fill=(200, 30, 30), width=3)
+        dr.ellipse([x - 5, y - 5, x + 5, y + 5], fill=(200, 30, 30))
+        tw = dr.textlength(text, font=f)
+        r = max(22, tw / 2 + 12)
+        if len(text) <= 2:
+            dr.ellipse([bx - r, by - 22, bx + r, by + 22], fill=(255, 255, 255), outline=(200, 30, 30), width=3)
+        else:
+            dr.rounded_rectangle([bx - r, by - 22, bx + r, by + 22], 10, fill=(255, 255, 255),
+                                 outline=(200, 30, 30), width=3)
+        dr.text((bx - tw / 2, by - 15), text, font=f, fill=(150, 20, 20))
+    img.save(out)

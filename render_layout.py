@@ -21,7 +21,7 @@ C = {"base": "#cdb98f", "front_band": BEIGE, "front_screen": "#e8d9b8", "rear": 
      "pr_clamp_l_keepout": "#ffa726", "pr_clamp_r_keepout": "#ffa726", "pr_lid_keepout": "#4fc3f7",
      "key_plate": "#9e9e9e", "key_switches": "#c62828", "key_caps": DARK, "key_wire_keepout": "#ff8a80",
      "xl4015": "#1565c0", "xl4015_side_keepout": "#ffa726", "pcf8574": "#5c6bc0",
-     "spk_chamber_env": "#a1887f", "speaker": "#212121", "kcd1": "#1a1a1a", "cable": "#111111"}
+     "spk_chamber_env": "#a1887f", "spk_stand": "#a1887f", "speaker": "#212121", "kcd1": "#1a1a1a", "cable": "#111111"}
 shapes = {**L.shells, **L.dummies, **L.hardware}
 shapes["crowpanel"] = screen_step()
 shapes["scr_aa"] = Location(screen_plane()) * Pos(0, 0, 0.05) * Box(P.SCR_AA[0], P.SCR_AA[1], 0.1)
