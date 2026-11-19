@@ -1,0 +1,150 @@
+"""Болванки компонентов (по габаритам) в координатах сборки. Только из params.py."""
+from build123d import (Align, Axis, Box, Compound, Cylinder, Location, Plane, Pos, Rot,
+                       Solid, Vector, import_step)
+
+import params as P
+
+CA = (Align.CENTER, Align.CENTER, Align.CENTER)
+MIN = (Align.MIN, Align.MIN, Align.MIN)
+
+
+def box_xyz(x0, x1, y0, y1, z0, z1):
+    """Бокс по границам в координатах сборки."""
+    return Pos((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2) * Box(x1 - x0, y1 - y0, z1 - z0)
+
+
+# ------------------------------------------------------------------ экран
+def screen_plane():
+    """Плоскость, переводящая координаты STEP-модели CrowPanel в сборку."""
+    import math
+    n = Vector(0, -math.cos(P.TILT), math.sin(P.TILT))          # наружу, к зрителю
+    y, z = P.slope_point(P.SCR_AA_S, depth=P.SCR_RECESS + P.SCR_Z_GLASS_FRONT)
+    x_dir = Vector(-1, 0, 0) if P.SCR_ROT_180 else Vector(1, 0, 0)
+    return Plane(origin=(0, y, z), x_dir=x_dir, z_dir=n)
+
+
+def screen_local():
+    """Болванки экрана в координатах STEP (центр АО = 0,0; +Z к зрителю)."""
+    pcb_w, pcb_h, pcb_t = P.SCR_PCB
+    out = {}
+    out["scr_pcb"] = Pos(0, P.SCR_PCB_CY, (P.SCR_Z_PCB_FRONT + P.SCR_Z_PCB_BACK) / 2) * Box(pcb_w, pcb_h, pcb_t)
+    gz0, gz1 = P.SCR_Z_PCB_FRONT, P.SCR_Z_GLASS_FRONT
+    out["scr_glass"] = Pos(0, P.SCR_GLASS_CY, (gz0 + gz1) / 2) * Box(*P.SCR_GLASS, gz1 - gz0)
+    bz0, bz1 = P.SCR_Z_BACK_MAX, P.SCR_Z_PCB_BACK
+    out["scr_back_keepout"] = Pos(0, P.SCR_PCB_CY, (bz0 + bz1) / 2) * Box(pcb_w, pcb_h, bz1 - bz0)
+    # кабели HY2.0 / карта TF над верхней кромкой
+    y_top = P.SCR_PCB_CY + pcb_h / 2
+    out["scr_cable_keepout"] = Pos(15, y_top + P.SCR_TOP_CABLE / 2, (bz0 + bz1) / 2) * Box(
+        110, P.SCR_TOP_CABLE, bz1 - bz0 + 4)
+    # штекер USB-C слева
+    x0, x1, y0, y1, _ = P.SCR_CONNECTORS["USB-C"]
+    out["scr_usb_keepout"] = Pos(-pcb_w / 2 - P.SCR_USB_PLUG / 2, (y0 + y1) / 2, -7.5) * Box(
+        P.SCR_USB_PLUG, 12, 8)
+    return out
+
+
+def screen():
+    pl = screen_plane()
+    loc = Location(pl)
+    return {k: loc * v for k, v in screen_local().items()}
+
+
+def screen_step():
+    """Настоящая модель платы (без акрилового корпуса) — для наглядных рендеров."""
+    c = import_step("vendor/crowpanel5_bare.step")
+    return Location(screen_plane()) * c
+
+
+# ------------------------------------------------------------------ принтер
+def printer():
+    cw, ch = P.PR_CUT
+    bw, bh = P.PR_BODY
+    fw, fh = P.PR_FRAME
+    zc = P.PR_CUT_Z0 + ch / 2
+    x = P.PR_X
+    out = {}
+    out["pr_frame"] = box_xyz(x - fw / 2, x + fw / 2, -P.PR_FRAME_T, 0, zc - fh / 2, zc + fh / 2)
+    out["pr_body"] = box_xyz(x - bw / 2, x + bw / 2, 0, P.PR_BEHIND, zc - bh / 2, zc + bh / 2)
+    out["pr_rear_keepout"] = box_xyz(x - bw / 2, x + bw / 2, P.PR_BEHIND, P.PR_BEHIND + P.PR_REAR_FREE,
+                                     zc - bh / 2, zc + bh / 2)
+    for side, sx in (("l", -1), ("r", 1)):
+        xa = x + sx * bw / 2
+        xb = xa + sx * P.PR_CLAMP_SIDE
+        out[f"pr_clamp_{side}_keepout"] = box_xyz(min(xa, xb), max(xa, xb), P.PANEL_T, P.PR_BEHIND,
+                                                  zc - bh / 2, zc + bh / 2)
+    # откидывание крышки лотка: полуцилиндр перед рамкой, ось вдоль X у верхней кромки рамки
+    hinge_y, hinge_z = -P.PR_FRAME_T, zc + fh / 2
+    cyl = Pos(x, hinge_y, hinge_z) * Rot(0, 90, 0) * Cylinder(P.PR_LID_SWEEP, fw)
+    half = box_xyz(x - fw, x + fw, hinge_y - P.PR_LID_SWEEP - 1, hinge_y, hinge_z - P.PR_LID_SWEEP - 1,
+                   hinge_z + P.PR_LID_SWEEP + 1)
+    out["pr_lid_keepout"] = cyl & half
+    return out
+
+
+# ------------------------------------------------------------------ клавиши
+def key_centers():
+    return [P.KEY_X + (i - (P.KEY_N - 1) / 2) * P.KEY_PITCH for i in range(P.KEY_N)]
+
+
+def keys():
+    out = {}
+    y_plate0 = P.PANEL_T                      # пластина прижата к тылу панели
+    y_plate1 = y_plate0 + P.KEY_PLATE_T
+    z = P.KEY_Z
+    xs = key_centers()
+    pw = (P.KEY_N - 1) * P.KEY_PITCH + 14 + 2 * 6
+    out["key_plate"] = box_xyz(P.KEY_X - pw / 2, P.KEY_X + pw / 2, y_plate0, y_plate1, z - 14, z + 14)
+    sw, caps = [], []
+    for x in xs:
+        sw.append(box_xyz(x - 7, x + 7, y_plate1, y_plate1 + P.KEY_BELOW_PLATE, z - 7, z + 7))
+        sw.append(box_xyz(x - 7.8, x + 7.8, y_plate0 - P.KEY_ABOVE_PLATE, y_plate0, z - 7.8, z + 7.8))
+        cy1 = y_plate0 - P.KEY_ABOVE_PLATE + 1.0
+        caps.append(box_xyz(x - 9, x + 9, cy1 - P.KEY_CAP[2], cy1, z - 9, z + 9))
+    out["key_switches"] = Compound(children=sw)
+    out["key_caps"] = Compound(children=caps)
+    out["key_wire_keepout"] = box_xyz(P.KEY_X - pw / 2, P.KEY_X + pw / 2, y_plate1 + P.KEY_BELOW_PLATE,
+                                      y_plate1 + P.KEY_BELOW_PLATE + 10, z - 12, z + 12)
+    return out
+
+
+# ------------------------------------------------------------------ внутренности
+def internals():
+    out = {}
+    x, y = P.XL_POS
+    w, d = P.XL_PAD
+    out["xl4015"] = box_xyz(x - w / 2, x + w / 2, y - d / 2, y + d / 2, P.CH_T, P.CH_T + P.XL_H)
+    out["xl4015_side_keepout"] = box_xyz(x + w / 2, x + w / 2 + P.XL_SIDE_FREE, y - d / 2, y + d / 2,
+                                         P.CH_T, P.CH_T + P.XL_H)
+    # PCF8574 на стойках
+    x, y = P.PCF_POS
+    bw, bd, bt = P.PCF_BOARD
+    z0 = P.CH_T + P.PCF_STANDOFF_H
+    out["pcf8574"] = box_xyz(x - bw / 2, x + bw / 2, y - bd / 2, y + bd / 2, z0, z0 + bt + 8.5)  # + штыри/разъёмы
+    # динамик в камере у правой стенки
+    cin = P.SPK_CHAMBER_IN
+    x_out = P.W / 2 - P.COVER_T - P.FIT - P.SPK_FOAM
+    cx0 = x_out - (cin[0] + 2 * P.WALL)
+    y = P.SPK_POS[1]
+    zc = P.CH_T + cin[2] / 2 + P.WALL
+    out["spk_chamber_env"] = box_xyz(cx0, x_out, y - cin[1] / 2 - P.WALL, y + cin[1] / 2 + P.WALL,
+                                     P.CH_T, P.CH_T + cin[2] + 2 * P.WALL)
+    out["speaker"] = Pos(x_out - P.WALL - P.SPK_DEPTH / 2, y, zc) * Rot(0, 90, 0) * Cylinder(
+        P.SPK_D / 2, P.SPK_DEPTH)
+    # задняя стенка: выключатель и кабель
+    yr = P.D - P.REAR_T
+    sx, sz = P.SW_POS
+    out["kcd1"] = box_xyz(sx - P.SW_CUT[0] / 2, sx + P.SW_CUT[0] / 2, yr - P.SW_BODY_D, P.D + 2,
+                          sz - P.SW_CUT[1] / 2, sz + P.SW_CUT[1] / 2)
+    cx, cz = P.CABLE_POS
+    out["cable"] = Pos(cx, P.D - 20, cz) * Rot(90, 0, 0) * Cylinder(P.CABLE_D / 2, 40)
+    return out
+
+
+def all_dummies():
+    d = {}
+    for f in (screen, printer, keys, internals):
+        d.update(f())
+    return d
+
+
+KEEPOUT = lambda name: name.endswith("_keepout") or name.endswith("_env")  # noqa: E731

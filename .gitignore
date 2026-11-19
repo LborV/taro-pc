@@ -1,0 +1,4 @@
+__pycache__/
+.mcp-server.log
+*.pyc
+vendor/crowpanel5_bare.step
