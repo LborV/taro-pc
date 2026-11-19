@@ -30,7 +30,7 @@
   "size": [
    140.2,
    95.8,
-   1.2
+   3.0
   ],
   "orient": "лицом вниз",
   "colour": "тёмно-серый",
@@ -49,7 +49,7 @@
   "colour": "бежевый",
   "fits_bed": true,
   "qty": 1,
-  "volume_cm3": 56.7
+  "volume_cm3": 64.4
  },
  {
   "file": "taro_cover.stl",

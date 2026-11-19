@@ -30,7 +30,7 @@
   "size": [
    140.2,
    95.8,
-   1.2
+   3.0
   ],
   "orient": "лицом вниз",
   "colour": "тёмно-серый",
@@ -62,7 +62,7 @@
   "colour": "бежевый",
   "fits_bed": true,
   "qty": 1,
-  "volume_cm3": 31.7
+  "volume_cm3": 39.4
  },
  {
   "file": "taro_side_l.stl",

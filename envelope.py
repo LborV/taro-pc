@@ -128,7 +128,33 @@ def screen_bezel():
         frame = chamfer(inner_edges, 0.8)
     except Exception as e:  # noqa: BLE001
         print("bezel chamfer skipped:", e)
+    pd, ph = P.SCR_BEZEL_PIN
+    for (px, py) in P.SCR_BEZEL_PINS:
+        pin = Pos(px, py, _z_face() - t - ph / 2 + 0.01) * Cylinder(pd / 2, ph + 0.02)
+        try:
+            pin = chamfer(pin.edges().group_by(Axis.Z)[0], 0.4)
+        except Exception:  # noqa: BLE001
+            pass
+        frame = frame + pin
     return loc * frame
+
+
+def bezel_backing_and_sockets():
+    """Утолщение панели изнутри под полосой рамки (вне стекла) + гнёзда под шипы рамки."""
+    loc = Location(screen_plane())
+    gw, gh = P.SCR_GLASS
+    bw, bh = gw + 2 * P.SCR_BEZEL_W, gh + 2 * P.SCR_BEZEL_W
+    z_in = _z_face() - P.WALL
+    t = P.SCR_BEZEL_BACKING
+    outer = Pos(0, P.SCR_GLASS_CY, z_in - t / 2 + 0.3) * Box(bw, bh, t + 0.6)
+    hole = Pos(0, P.SCR_GLASS_CY, z_in - t / 2) * Box(gw + 2 * P.SCR_BEZEL_GAP + 1.0, gh + 2 * P.SCR_BEZEL_GAP + 1.0, 20)
+    backing = outer - hole
+    pd, ph = P.SCR_BEZEL_PIN
+    socks = None
+    for (px, py) in P.SCR_BEZEL_PINS:
+        sck = Pos(px, py, _z_face() - P.SCR_BEZEL_T - (ph + 0.3) / 2 + 0.01) * Cylinder(pd / 2 + 0.15, ph + 0.3)
+        socks = sck if socks is None else socks + sck
+    return loc * backing, loc * socks
 
 
 def _band_cuts():
@@ -347,6 +373,8 @@ def build(with_fasteners=True):
     parts["base"] = parts["base"] + base_extras(b)
     parts["rear"] = parts["rear"] + rear_bushing()
     parts["screen_bezel"] = screen_bezel()
+    bk, sk = bezel_backing_and_sockets()
+    parts["front_screen"] = parts["front_screen"] + bk - sk
     hw = {}
     if with_fasteners:
         import fasteners
